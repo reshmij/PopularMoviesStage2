@@ -1,0 +1,30 @@
+package com.reshmi.james.popularmovies.util;
+
+import com.reshmi.james.popularmovies.model.Movie;
+import com.reshmi.james.popularmovies.model.PopularMoviesResponse;
+
+import java.util.ArrayList;
+
+/**
+ * Created by reshmijames on 3/14/18.
+ */
+
+public class TestUtils {
+
+
+    public static PopularMoviesResponse loadPopularMovies ( ){
+
+        ArrayList<Movie> movies = new ArrayList<>();
+
+        movies.add(new Movie("Zootopia","https://image.tmdb.org/t/p/w185/sM33SANp9z6rXW8Itn7NnG1GOEs.jpg"));
+        movies.add(new Movie("Thor: Ragnarok","https://image.tmdb.org/t/p/w185/rzRwTcFvttcN1ZpX2xv4j3tSdJu.jpg"));
+        movies.add(new Movie("Black Panther","https://image.tmdb.org/t/p/w185/uxzzxijgPIY7slzFvMotPv8wjKA.jpg"));
+        movies.add(new Movie("The shape of water","https://image.tmdb.org/t/p/w185/k4FwHlMhuRR5BISY2Gm2QZHlH5Q.jpg"));
+        movies.add(new Movie("Star Wars: The Last Jedi","https://image.tmdb.org/t/p/w185/kOVEVeg59E0wsnXmF9nrh6OmWII.jpg"));
+
+        PopularMoviesResponse response = new PopularMoviesResponse(movies);
+        return response;
+
+    }
+
+}
