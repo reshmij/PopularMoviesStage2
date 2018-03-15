@@ -8,17 +8,23 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.model.Movie;
-import com.reshmi.james.popularmovies.model.PopularMoviesResponse;
-import com.reshmi.james.popularmovies.util.TestUtils;
+import com.reshmi.james.popularmovies.model.MoviesResponse;
+import com.reshmi.james.popularmovies.rest.RestApiClient;
+import com.reshmi.james.popularmovies.rest.RestEndpointInterface;
+import com.reshmi.james.popularmovies.util.Utils;
 import com.squareup.picasso.Picasso;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by reshmijames on 3/14/18.
@@ -26,24 +32,57 @@ import com.squareup.picasso.Picasso;
 
 public class PopularMoviesFragment extends Fragment {
 
+    private static String TAG = "PopularMoviesFragment";
+    RecyclerView mRecyclerView;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        RecyclerView rv = (RecyclerView) inflater.inflate(R.layout.fragment_popular_movies, container, false);
-        setupRecyclerView(rv);
-        return rv;
+        mRecyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_popular_movies, container, false);
+        setupRecyclerView();
+        return mRecyclerView;
     }
 
-    private void setupRecyclerView(RecyclerView recyclerView) {
-        recyclerView.setLayoutManager(new GridLayoutManager(recyclerView.getContext(),2));
-        recyclerView.setAdapter(new PopularMoviesGridAdapter(TestUtils.loadPopularMovies()));
+    private void setupRecyclerView() {
+        mRecyclerView.setLayoutManager(new GridLayoutManager(mRecyclerView.getContext(),2));
+        mRecyclerView.setItemViewCacheSize(20);
+        mRecyclerView.setDrawingCacheEnabled(true);
+        mRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        mRecyclerView.setAdapter(new PopularMoviesGridAdapter());
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        RestEndpointInterface apiService =
+                RestApiClient.getClient().create(RestEndpointInterface.class);
+
+        Call<MoviesResponse> call = apiService.getPopularMovies(getString(R.string.api_key));
+        call.enqueue(new Callback<MoviesResponse>() {
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+
+                PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter)mRecyclerView.getAdapter();
+                adapter.setData(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                onError();
+            }
+        });
+
+    }
+
+    private void onError() {
+        Toast.makeText(getContext(), R.string.error_detail, Toast.LENGTH_SHORT).show();
+    }
 
     public static class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMoviesGridAdapter.PopularMoviesViewHolder> implements View.OnClickListener{
-         PopularMoviesResponse popularMoviesResponse;
+         MoviesResponse moviesResponse=null;
 
-         @NonNull
+        @NonNull
          @Override
          public PopularMoviesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
@@ -57,10 +96,12 @@ public class PopularMoviesFragment extends Fragment {
 
              try {
 
-                 Movie movie = popularMoviesResponse.getMovies().get(position);
+                 Movie movie = moviesResponse.getResults()[position];
                  holder.mView.setTag(movie);
                  holder.mView.setOnClickListener(this);
-                 Picasso.get().load(movie.getPosterPath()).into(holder.mMoviePoster);
+
+                 String posterPath = Utils.getCompleteUrl(movie.getPosterPath());
+                 Picasso.get().load(posterPath).into(holder.mMoviePoster);
              }
              catch(Exception e){
                  e.printStackTrace();
@@ -69,11 +110,15 @@ public class PopularMoviesFragment extends Fragment {
 
          @Override
          public int getItemCount() {
-             return popularMoviesResponse.getMovies().size();
+            if(moviesResponse!=null) {
+                return moviesResponse.getResults().length;
+            }
+            return 0;
          }
 
-         public PopularMoviesGridAdapter(PopularMoviesResponse response){
-             popularMoviesResponse = response;
+         public void setData(MoviesResponse response){
+            this.moviesResponse = response;
+            notifyDataSetChanged();
          }
 
         @Override
