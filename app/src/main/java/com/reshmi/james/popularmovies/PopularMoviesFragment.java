@@ -127,7 +127,7 @@ public class PopularMoviesFragment extends Fragment {
              Context context = view.getContext();
              Movie movie = (Movie)view.getTag();
              Intent intent = new Intent(context, MovieDetailActivity.class);
-             intent.putExtra("movieName",movie.getOriginalTitle());
+             intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
              context.startActivity(intent);
 
         }

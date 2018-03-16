@@ -14,4 +14,9 @@ public class Utils {
     public static String getCompleteUrl(String relativeUrl){
         return BASE_POSTER_URL + POSTER_SIZE + relativeUrl;
     }
+
+    public static String formatRatingString(float rating, int base){
+        return rating+"/"+base;
+    }
+
 }
