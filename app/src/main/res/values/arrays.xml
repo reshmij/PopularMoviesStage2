@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="sort_order_options_label">
+        <item>@string/sort_by_popularity_label</item>
+        <item>@string/sort_by_rating_label</item>
+    </array>
+
+    <array name="sort_order_options_values">
+        <item>@string/sort_by_popularity_value</item>
+        <item>@string/sort_by_rating_value</item>
+    </array>
+
+</resources>

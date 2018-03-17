@@ -2,7 +2,9 @@ package com.reshmi.james.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.reshmi.james.popularmovies.adapter.PopularMoviesGridAdapter;
 import com.reshmi.james.popularmovies.model.Movie;
 import com.reshmi.james.popularmovies.model.MoviesResponse;
 import com.reshmi.james.popularmovies.rest.RestApiClient;
@@ -30,7 +33,7 @@ import retrofit2.Response;
  * Created by reshmijames on 3/14/18.
  */
 
-public class PopularMoviesFragment extends Fragment {
+public class PopularMoviesFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static String TAG = "PopularMoviesFragment";
     RecyclerView mRecyclerView;
@@ -40,7 +43,20 @@ public class PopularMoviesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRecyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_popular_movies, container, false);
         setupRecyclerView();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
+        loadFromSharedPreferences(sharedPreferences, getString(R.string.sort_order_pref_key));
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
         return mRecyclerView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
+        sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     private void setupRecyclerView() {
@@ -51,10 +67,30 @@ public class PopularMoviesFragment extends Fragment {
         mRecyclerView.setAdapter(new PopularMoviesGridAdapter());
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    private void onError() {
+        Toast.makeText(getContext(), R.string.error_detail, Toast.LENGTH_SHORT).show();
+    }
 
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(TAG, "shared preference changed");
+        if(key.equals(getString(R.string.sort_order_pref_key))){
+            loadFromSharedPreferences(sharedPreferences, key);
+        }
+    }
+
+    private void loadFromSharedPreferences(SharedPreferences sp, String key){
+        String sortOrder = sp.getString( key, getString(R.string.sort_by_popularity_value));
+        if(sortOrder.equals(getString(R.string.sort_by_popularity_value))){
+            loadPopularMovies();
+        }
+        else{
+            loadTopRatedMovies();
+        }
+    }
+
+    private void loadPopularMovies(){
         RestEndpointInterface apiService =
                 RestApiClient.getClient().create(RestEndpointInterface.class);
 
@@ -62,7 +98,6 @@ public class PopularMoviesFragment extends Fragment {
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-
                 PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter)mRecyclerView.getAdapter();
                 adapter.setData(response.body());
             }
@@ -72,78 +107,24 @@ public class PopularMoviesFragment extends Fragment {
                 onError();
             }
         });
-
     }
 
-    private void onError() {
-        Toast.makeText(getContext(), R.string.error_detail, Toast.LENGTH_SHORT).show();
-    }
+    private void loadTopRatedMovies(){
+        RestEndpointInterface apiService =
+                RestApiClient.getClient().create(RestEndpointInterface.class);
 
-    public static class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMoviesGridAdapter.PopularMoviesViewHolder> implements View.OnClickListener{
-         MoviesResponse moviesResponse=null;
-
-        @NonNull
-         @Override
-         public PopularMoviesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-             View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.popular_movies_grid_item_layout,parent, false);
-             PopularMoviesViewHolder vh = new PopularMoviesViewHolder(root);
-             return vh;
-         }
-
-         @Override
-         public void onBindViewHolder(@NonNull PopularMoviesViewHolder holder, int position) {
-
-             try {
-
-                 Movie movie = moviesResponse.getResults()[position];
-                 holder.mView.setTag(movie);
-                 holder.mView.setOnClickListener(this);
-
-                 String posterPath = Utils.getCompleteUrl(movie.getPosterPath());
-                 Picasso.get().load(posterPath).into(holder.mMoviePoster);
-             }
-             catch(Exception e){
-                 e.printStackTrace();
-             }
-         }
-
-         @Override
-         public int getItemCount() {
-            if(moviesResponse!=null) {
-                return moviesResponse.getResults().length;
+        Call<MoviesResponse> call = apiService.getTopRatedMovies(getString(R.string.api_key));
+        call.enqueue(new Callback<MoviesResponse>() {
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter)mRecyclerView.getAdapter();
+                adapter.setData(response.body());
             }
-            return 0;
-         }
 
-         public void setData(MoviesResponse response){
-            this.moviesResponse = response;
-            notifyDataSetChanged();
-         }
-
-        @Override
-        public void onClick(View view) {
-
-             Context context = view.getContext();
-             Movie movie = (Movie)view.getTag();
-             Intent intent = new Intent(context, MovieDetailActivity.class);
-             intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
-             context.startActivity(intent);
-
-        }
-
-        public static class PopularMoviesViewHolder extends RecyclerView.ViewHolder{
-
-            ImageView mMoviePoster;
-            View mView;
-
-
-            public PopularMoviesViewHolder(View view) {
-                super(view);
-                mView = view;
-                mMoviePoster = (ImageView) view.findViewById(R.id.movie_poster);
-
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                onError();
             }
-        }
+        });
     }
 }
