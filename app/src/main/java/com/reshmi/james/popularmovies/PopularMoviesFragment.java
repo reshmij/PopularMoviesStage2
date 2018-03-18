@@ -47,14 +47,9 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-        return mRecyclerView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
         loadFromSharedPreferences(sharedPreferences, getString(R.string.sort_order_pref_key));
+
+        return mRecyclerView;
     }
 
     @Override
