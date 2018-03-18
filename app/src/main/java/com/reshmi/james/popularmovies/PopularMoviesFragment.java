@@ -45,10 +45,16 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
         setupRecyclerView();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
-        loadFromSharedPreferences(sharedPreferences, getString(R.string.sort_order_pref_key));
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         return mRecyclerView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
+        loadFromSharedPreferences(sharedPreferences, getString(R.string.sort_order_pref_key));
     }
 
     @Override
@@ -74,7 +80,7 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(TAG, "shared preference changed");
+        Log.d(TAG, "Shared preference changed");
         if(key.equals(getString(R.string.sort_order_pref_key))){
             loadFromSharedPreferences(sharedPreferences, key);
         }
@@ -91,6 +97,13 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
     }
 
     private void loadPopularMovies(){
+
+        Context context = mRecyclerView.getContext();
+        if(!Utils.isOnline(context)){
+            Utils.onConnectionError(context);
+            return;
+        }
+
         RestEndpointInterface apiService =
                 RestApiClient.getClient().create(RestEndpointInterface.class);
 
@@ -110,6 +123,13 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
     }
 
     private void loadTopRatedMovies(){
+
+        Context context = mRecyclerView.getContext();
+        if(!Utils.isOnline(context)){
+            Utils.onConnectionError(context);
+            return;
+        }
+
         RestEndpointInterface apiService =
                 RestApiClient.getClient().create(RestEndpointInterface.class);
 

@@ -1,5 +1,11 @@
 package com.reshmi.james.popularmovies.util;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.view.View;
+import android.widget.Toast;
+
+import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.rest.RestApiClient;
 
 /**
@@ -18,5 +24,22 @@ public class Utils {
     public static String formatRatingString(float rating, int base){
         return rating+"/"+base;
     }
+
+    public static boolean isOnline(Context context){
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnectedOrConnecting();
+    }
+
+    public static void onConnectionError(Context context){
+        Toast.makeText( context, R.string.connection_error, Toast.LENGTH_LONG).show();
+    }
+
+    public static void onError(Context context){
+        Toast.makeText( context, R.string.error_detail, Toast.LENGTH_LONG).show();
+    }
+
 
 }

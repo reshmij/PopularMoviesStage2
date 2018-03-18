@@ -15,6 +15,7 @@
     <string name="sort_order_pref_key" translatable="false">sort_order_key</string>
     <string name="sort_by_popularity_value" translatable="false">popularity</string>
     <string name="sort_by_rating_value" translatable="false">rating</string>
+    <string name="connection_error">Unable to connect, please check your internet connection</string>
 
 
 </resources>
