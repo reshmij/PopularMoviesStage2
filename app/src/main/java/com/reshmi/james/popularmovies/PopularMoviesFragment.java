@@ -73,11 +73,6 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
         mRecyclerView.setAdapter(new PopularMoviesGridAdapter());
     }
 
-    private void onError() {
-        Toast.makeText(getContext(), R.string.error_detail, Toast.LENGTH_SHORT).show();
-    }
-
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d(TAG, "Shared preference changed");
@@ -98,7 +93,7 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
 
     private void loadPopularMovies(){
 
-        Context context = mRecyclerView.getContext();
+        final Context context = mRecyclerView.getContext();
         if(!Utils.isOnline(context)){
             Utils.onConnectionError(context);
             return;
@@ -117,14 +112,15 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
 
             @Override
             public void onFailure(Call<MoviesResponse> call, Throwable t) {
-                onError();
+                Log.e(TAG,"Error loading popular movies");
+                Utils.onError(context);
             }
         });
     }
 
     private void loadTopRatedMovies(){
 
-        Context context = mRecyclerView.getContext();
+        final Context context = mRecyclerView.getContext();
         if(!Utils.isOnline(context)){
             Utils.onConnectionError(context);
             return;
@@ -143,7 +139,8 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
 
             @Override
             public void onFailure(Call<MoviesResponse> call, Throwable t) {
-                onError();
+                Log.e(TAG,"Error loading topRated movies");
+                Utils.onError(context);
             }
         });
     }
