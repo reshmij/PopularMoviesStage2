@@ -2,7 +2,7 @@
     <string name="app_name">Pop Movies</string>
 
     <!--Replace the string value with the api key here-->
-    <string name="api_key">Enter-your-api-key-here</string>
+    <string name="api_key" translatable="false">Enter-your-api-key-here</string>
 
     <string name="error_detail">Unable to load, please try again later</string>
     <string name="title_activity_settings">Settings</string>
