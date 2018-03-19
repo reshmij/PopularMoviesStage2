@@ -16,20 +16,15 @@ import com.reshmi.james.popularmovies.model.MoviesResponse;
 import com.reshmi.james.popularmovies.util.Utils;
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by reshmijames on 3/17/18.
- */
-
 public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMoviesGridAdapter.PopularMoviesViewHolder> implements View.OnClickListener{
-    MoviesResponse moviesResponse=null;
+    private MoviesResponse moviesResponse=null;
 
     @NonNull
     @Override
     public PopularMoviesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.popular_movies_grid_item_layout,parent, false);
-        PopularMoviesViewHolder vh = new PopularMoviesViewHolder(root);
-        return vh;
+        return new PopularMoviesViewHolder(root);
     }
 
     @Override
@@ -76,14 +71,14 @@ public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMovies
 
     public static class PopularMoviesViewHolder extends RecyclerView.ViewHolder{
 
-        ImageView mMoviePoster;
-        View mView;
+        final ImageView mMoviePoster;
+        final View mView;
 
 
         public PopularMoviesViewHolder(View view) {
             super(view);
             mView = view;
-            mMoviePoster = (ImageView) view.findViewById(R.id.movie_poster);
+            mMoviePoster = view.findViewById(R.id.movie_poster);
 
         }
     }

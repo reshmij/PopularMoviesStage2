@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/pop_movies_fragment_container"
-    tools:context="com.reshmi.james.popularmovies.MainActivity">
+    tools:context="com.reshmi.james.popularmovies.MainActivity"
+    tools:ignore="MergeRootFrame">
 
 </FrameLayout>

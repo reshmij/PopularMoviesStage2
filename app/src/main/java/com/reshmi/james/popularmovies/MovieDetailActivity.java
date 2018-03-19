@@ -6,21 +6,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.TextView;
 
 import com.reshmi.james.popularmovies.model.Movie;
 
-import org.w3c.dom.Text;
-
-/**
- * Created by reshmijames on 3/14/18.
- */
-
 public class MovieDetailActivity extends AppCompatActivity {
 
-    public static String MOVIE_KEY = "movie";
-    private static String TAG = "MovieDetailActivity";
+    public static final String MOVIE_KEY = "movie";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

@@ -1,7 +1,6 @@
 package com.reshmi.james.popularmovies;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,33 +13,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.reshmi.james.popularmovies.adapter.PopularMoviesGridAdapter;
-import com.reshmi.james.popularmovies.model.Movie;
 import com.reshmi.james.popularmovies.model.MoviesResponse;
 import com.reshmi.james.popularmovies.rest.RestApiClient;
 import com.reshmi.james.popularmovies.rest.RestEndpointInterface;
 import com.reshmi.james.popularmovies.util.Utils;
-import com.squareup.picasso.Picasso;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by reshmijames on 3/14/18.
- */
-
 public class PopularMoviesFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static String TAG = "PopularMoviesFragment";
-    RecyclerView mRecyclerView;
+    private static final String TAG = "PopularMoviesFragment";
+    private RecyclerView mRecyclerView;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRecyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_popular_movies, container, false);
         setupRecyclerView();
 
@@ -100,13 +91,13 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
         Call<MoviesResponse> call = apiService.getPopularMovies(getString(R.string.api_key));
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
-            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+            public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
                 PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter)mRecyclerView.getAdapter();
                 adapter.setData(response.body());
             }
 
             @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
                 Log.e(TAG,"Error loading popular movies");
                 Utils.onError(context);
             }
@@ -127,13 +118,13 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
         Call<MoviesResponse> call = apiService.getTopRatedMovies(getString(R.string.api_key));
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
-            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+            public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
                 PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter)mRecyclerView.getAdapter();
                 adapter.setData(response.body());
             }
 
             @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
                 Log.e(TAG,"Error loading topRated movies");
                 Utils.onError(context);
             }

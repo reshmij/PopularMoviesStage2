@@ -5,10 +5,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
 
-/**
- * Created by reshmijames on 3/14/18.
- */
-
 public class MoviesResponse {
 
     @SerializedName("results")

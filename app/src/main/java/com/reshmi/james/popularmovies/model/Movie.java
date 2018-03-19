@@ -6,11 +6,6 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
-import java.util.Date;
-
-/**
- * Created by reshmijames on 3/14/18.
- */
 
 public class Movie implements Parcelable {
 
@@ -199,7 +194,7 @@ public class Movie implements Parcelable {
         this.posterPath = posterPath;
     }
 
-    protected Movie(Parcel in) {
+    private Movie(Parcel in) {
         voteAverage = in.readFloat();
         backdropPath = in.readString();
         adult = in.readByte() != 0x00;

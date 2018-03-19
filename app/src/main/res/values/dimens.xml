@@ -2,4 +2,5 @@
 <resources>
     <dimen name="recyclerviewImageHeight">300dp</dimen>
     <dimen name="titleLeftPadding">24dp</dimen>
+    <dimen name="titleRightPadding">8dp</dimen>
 </resources>

@@ -16,6 +16,7 @@
     <string name="sort_by_popularity_value" translatable="false">popularity</string>
     <string name="sort_by_rating_value" translatable="false">rating</string>
     <string name="connection_error">Unable to connect, please check your internet connection</string>
+    <string name="image_content_description">Movie poster image</string>
 
 
 </resources>

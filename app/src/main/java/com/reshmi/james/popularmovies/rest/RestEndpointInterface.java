@@ -7,9 +7,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-/**
- * Created by reshmijames on 3/15/18.
- */
 
 public interface RestEndpointInterface {
 

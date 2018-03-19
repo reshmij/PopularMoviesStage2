@@ -5,13 +5,11 @@ import com.reshmi.james.popularmovies.model.MoviesResponse;
 
 import java.util.ArrayList;
 
-/**
- * Created by reshmijames on 3/14/18.
- */
 
-public class TestUtils {
+ class TestUtils {
 
 
+    @SuppressWarnings("unused")
     public static MoviesResponse loadPopularMovies ( ){
 
         ArrayList<Movie> movies = new ArrayList<>();
@@ -22,8 +20,7 @@ public class TestUtils {
         movies.add(new Movie("The shape of water","https://image.tmdb.org/t/p/w185/k4FwHlMhuRR5BISY2Gm2QZHlH5Q.jpg"));
         movies.add(new Movie("Star Wars: The Last Jedi","https://image.tmdb.org/t/p/w185/kOVEVeg59E0wsnXmF9nrh6OmWII.jpg"));
 
-        MoviesResponse response = new MoviesResponse(movies.toArray(new Movie[movies.size()]));
-        return response;
+        return new MoviesResponse(movies.toArray(new Movie[movies.size()]));
 
     }
 

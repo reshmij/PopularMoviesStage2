@@ -2,15 +2,9 @@ package com.reshmi.james.popularmovies.util;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.view.View;
 import android.widget.Toast;
 
 import com.reshmi.james.popularmovies.R;
-import com.reshmi.james.popularmovies.rest.RestApiClient;
-
-/**
- * Created by reshmijames on 3/15/18.
- */
 
 public class Utils {
 
@@ -21,15 +15,16 @@ public class Utils {
         return BASE_POSTER_URL + POSTER_SIZE + relativeUrl;
     }
 
-    public static String formatRatingString(float rating, int base){
-        return rating+"/"+base;
+    public static String formatRatingString(float rating){
+        return rating+"/"+10;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isOnline(Context context){
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        return cm.getActiveNetworkInfo() != null &&
+        return cm!=null && cm.getActiveNetworkInfo() != null &&
                 cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
