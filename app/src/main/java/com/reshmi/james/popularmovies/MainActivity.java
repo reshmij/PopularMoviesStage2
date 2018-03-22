@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         PopularMoviesFragment fragment = new PopularMoviesFragment();
-        fragmentTransaction.add(R.id.pop_movies_fragment_container, fragment);
+        fragmentTransaction.replace(R.id.pop_movies_fragment_container, fragment);
         fragmentTransaction.commit();
     }
 

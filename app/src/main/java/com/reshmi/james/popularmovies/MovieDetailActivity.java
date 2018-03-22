@@ -29,7 +29,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.add(R.id.movie_detail_fragment_container, movieDetailFragment);
+        ft.replace(R.id.movie_detail_fragment_container, movieDetailFragment);
         ft.commit();
     }
 }
