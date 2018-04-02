@@ -16,10 +16,12 @@ public class MoviesResponse {
     @SerializedName("total_results")
     private String totalResults;
 
+    public MoviesResponse() {
+    }
+
     public MoviesResponse(Movie[] results) {
         this.results = results;
     }
-
     public Movie[] getResults() {
         return results;
     }

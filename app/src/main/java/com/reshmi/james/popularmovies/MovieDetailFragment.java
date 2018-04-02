@@ -2,24 +2,35 @@ package com.reshmi.james.popularmovies;
 
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.reshmi.james.popularmovies.adapter.MovieReviewsListAdapter;
 import com.reshmi.james.popularmovies.adapter.MovieTrailerListAdapter;
+import com.reshmi.james.popularmovies.database.MovieDbContract;
+import com.reshmi.james.popularmovies.database.MovieDbContract.MovieEntry;
+import com.reshmi.james.popularmovies.database.MovieDbHelper;
 import com.reshmi.james.popularmovies.model.Movie;
 import com.reshmi.james.popularmovies.model.ReviewResponse;
 import com.reshmi.james.popularmovies.model.TrailerResponse;
+import com.reshmi.james.popularmovies.provider.ProviderUtils;
 import com.reshmi.james.popularmovies.rest.RestApiClient;
 import com.reshmi.james.popularmovies.rest.RestEndpointInterface;
 import com.reshmi.james.popularmovies.util.Utils;
@@ -29,18 +40,23 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MovieDetailFragment extends Fragment {
+public class MovieDetailFragment extends Fragment implements View.OnClickListener {
 
     public static final String MOVIE_DETAIL = "movie_detail";
+    MovieDbHelper mMovieDbHelper;
+    Movie mMovie;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
+        mMovieDbHelper = new MovieDbHelper(getContext());
+
         Bundle args = getArguments();
-        Movie movie = args != null ? (Movie) args.getParcelable(MOVIE_DETAIL) : null;
-        populateUI(root,movie);
+        mMovie = args != null ? (Movie) args.getParcelable(MOVIE_DETAIL) : null;
+        populateUI(root,mMovie);
+
         return root;
     }
 
@@ -74,6 +90,15 @@ public class MovieDetailFragment extends Fragment {
             reviewList.setHasFixedSize(true);
             reviewList.setNestedScrollingEnabled(false);
             loadReviews( reviewList, movie);
+
+            Button favoriteButton = root.findViewById(R.id.movie_detail_add_favorite_btn);
+            if(mMovieDbHelper.isMovieMarkedAsFavorite(movie)){
+                favoriteButton.setText(getString(R.string.remove_from_favorites));
+            }
+            else{
+                favoriteButton.setText(getString(R.string.mark_as_favorite));
+            }
+            favoriteButton.setOnClickListener(this);
         }
     }
 
@@ -123,16 +148,34 @@ public class MovieDetailFragment extends Fragment {
             public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
                 MovieTrailerListAdapter adapter = (MovieTrailerListAdapter) trailerList.getAdapter();
                 adapter.setData(response.body());
-
             }
 
             @Override
             public void onFailure(Call<TrailerResponse> call, Throwable t) {
-
                 t.printStackTrace();
                 Utils.onError(context);
             }
         });
     }
 
+    @Override
+    public void onClick(View view) {
+
+        if(view.getId() == R.id.movie_detail_add_favorite_btn){
+
+            Button b = (Button) view;
+            if(b.getText().equals(getString(R.string.mark_as_favorite))){
+                getContext().getContentResolver().insert(MovieEntry.CONTENT_URI, ProviderUtils.getContentValues(mMovie));
+                b.setText(getString(R.string.remove_from_favorites));
+                Toast.makeText(getContext(),getString(R.string.marked_as_favorite), Toast.LENGTH_SHORT).show();
+            }
+            else{
+                String selection = MovieEntry.COLUMN_NAME_MOVIE_ID+"=?";
+                String[] selectionArgs = {String.valueOf(mMovie.getId())};
+                getContext().getContentResolver().delete(MovieEntry.CONTENT_URI,selection, selectionArgs);
+                b.setText(getString(R.string.mark_as_favorite));
+                Toast.makeText(getContext(),getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

@@ -11,15 +11,21 @@
     <string name="sort_order_title">Sort by</string>
     <string name="sort_by_popularity_label">Most Popular</string>
     <string name="sort_by_rating_label">Top Rating</string>
+    <string name="sort_by_favorites_label">Favorites</string>
 
     <string name="sort_order_pref_key" translatable="false">sort_order_key</string>
     <string name="sort_by_popularity_value" translatable="false">popularity</string>
     <string name="sort_by_rating_value" translatable="false">rating</string>
+    <string name="sort_by_favorites_value" translatable="false">favorites</string>
     <string name="connection_error">Unable to connect, please check your internet connection</string>
+    <string name="marked_as_favorite">Marked as favorite</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
     <string name="image_content_description">Movie poster image</string>
 
     <string name="reviews">Reviews</string>
     <string name="trailers">Trailers</string>
     <string name="author">Written by %s</string>
+    <string name="mark_as_favorite">Mark as \nfavorite</string>
+    <string name="remove_from_favorites">Remove from \nfavorites</string>
 
 </resources>

@@ -58,7 +58,8 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="@android:color/darker_gray"
             app:layout_constraintStart_toEndOf="@id/movie_detail_thumbnail"
-            app:layout_constraintTop_toBottomOf="@id/movie_detail_title" />
+            app:layout_constraintTop_toBottomOf="@id/movie_detail_title"
+            tools:text="Release date"/>
 
 
         <TextView
@@ -69,6 +70,20 @@
             app:layout_constraintStart_toStartOf="@+id/movie_detail_release_date"
             app:layout_constraintTop_toBottomOf="@+id/movie_detail_release_date"
             tools:text="user rating" />
+
+        <Button
+            android:id="@+id/movie_detail_add_favorite_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="@color/colorBackground"
+            android:text="@string/mark_as_favorite"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
+            app:layout_constraintStart_toStartOf="@+id/movie_detail_user_rating"
+            app:layout_constraintTop_toBottomOf="@+id/movie_detail_user_rating" />
+
 
         <View
             android:id="@+id/divider"
@@ -131,6 +146,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/movie_detail_review_title" />
+
 
     </android.support.constraint.ConstraintLayout>
 
