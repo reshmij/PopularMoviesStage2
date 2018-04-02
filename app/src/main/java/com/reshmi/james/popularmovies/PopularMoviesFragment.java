@@ -2,14 +2,17 @@ package com.reshmi.james.popularmovies;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -36,11 +39,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PopularMoviesFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class PopularMoviesFragment extends Fragment implements PopularMoviesGridAdapter.ListItemClickListener,SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "PopularMoviesFragment";
     private static final int ID_MOVIE_LOADER = 104;
+    private static final String SCROLL_POSITION = "scroll_position";
     private RecyclerView mRecyclerView;
+    private boolean mDualPane;
+    private MoviesResponse mMoviesResponse;
+    private int mCurrentChoice = 0;
+
 
     @Nullable
     @Override
@@ -53,10 +61,25 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        //Check if we are in dual pane mode
+        View detailsFrame = getActivity().findViewById(R.id.pop_movies_detail_view_container);
+        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+
+        if(savedInstanceState!=null){
+            mCurrentChoice = savedInstanceState.getInt(SCROLL_POSITION);
+        }
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
-        loadFromSharedPreferences(sharedPreferences, getString(R.string.sort_order_pref_key));
+        loadMovies(sharedPreferences, getString(R.string.sort_order_pref_key));
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SCROLL_POSITION,mCurrentChoice);
     }
 
     @Override
@@ -71,18 +94,19 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
         mRecyclerView.setItemViewCacheSize(20);
         mRecyclerView.setDrawingCacheEnabled(true);
         mRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        mRecyclerView.setAdapter(new PopularMoviesGridAdapter());
+        mRecyclerView.setAdapter(new PopularMoviesGridAdapter(this));
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d(TAG, "Shared preference changed");
         if(key.equals(getString(R.string.sort_order_pref_key))){
-            loadFromSharedPreferences(sharedPreferences, key);
+            loadMovies(sharedPreferences, key);
         }
     }
 
-    private void loadFromSharedPreferences(SharedPreferences sp, String key){
+    private void loadMovies(SharedPreferences sp, String key){
+        Log.d(TAG, "loadMovies");
         String sortOrder = sp.getString( key, getString(R.string.sort_by_popularity_value));
         if(sortOrder.equals(getString(R.string.sort_by_popularity_value))){
             loadPopularMovies();
@@ -96,11 +120,13 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
     }
 
     private void loadFromDatabase() {
-        getActivity().getSupportLoaderManager().initLoader( ID_MOVIE_LOADER, null, this);
+        Log.d(TAG, "loadFromDatabase");
+        getActivity().getSupportLoaderManager().restartLoader( ID_MOVIE_LOADER, null, this);
     }
 
     private void loadPopularMovies(){
 
+        Log.d(TAG, "loadPopularMovies");
         final Context context = mRecyclerView.getContext();
         if(!Utils.isOnline(context)){
             Utils.onConnectionError(context);
@@ -114,8 +140,7 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
-                PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter)mRecyclerView.getAdapter();
-                adapter.setData(response.body());
+                populateMoviesList(response.body());
             }
 
             @Override
@@ -127,7 +152,7 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
     }
 
     private void loadTopRatedMovies(){
-
+        Log.d(TAG, "loadTopRatedMovies");
         final Context context = mRecyclerView.getContext();
         if(!Utils.isOnline(context)){
             Utils.onConnectionError(context);
@@ -141,8 +166,7 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
-                PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter)mRecyclerView.getAdapter();
-                adapter.setData(response.body());
+                populateMoviesList(response.body());
             }
 
             @Override
@@ -157,6 +181,8 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+
+        Log.d(TAG, "onCreateLoader");
         return new CursorLoader(getContext(),
                 MovieEntry.CONTENT_URI,
                 null,
@@ -168,15 +194,68 @@ public class PopularMoviesFragment extends Fragment implements SharedPreferences
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
 
+        Log.d(TAG, "onLoadFinished");
         if(data.getCount()>0) {
-            PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
-            adapter.setData(ProviderUtils.parseMovieResponse(data));
+            populateMoviesList(ProviderUtils.parseMovieResponse(data));
         }
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader loader) {
+
+        Log.d(TAG, "onLoaderReset");
         PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
         adapter.setData(null);
+    }
+
+    @Override
+    public void onListItemClick(View view, int position) {
+
+        try {
+            Movie movie = mMoviesResponse.getResults()[position];
+            mCurrentChoice = position;
+            showDetails(movie);
+        }
+        catch(Exception e){
+            Log.e(TAG,"Error loading movie details");
+            e.printStackTrace();
+        }
+    }
+
+    private void populateMoviesList(MoviesResponse moviesResponse){
+        mMoviesResponse = moviesResponse;
+
+        PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
+        adapter.setData(mMoviesResponse);
+        mRecyclerView.smoothScrollToPosition(mCurrentChoice);
+
+        if(mDualPane){
+            showDetails(mMoviesResponse.getResults()[mCurrentChoice]);
+        }
+    }
+
+    private void showDetails(Movie movie){
+        if(mDualPane){
+
+            // Check what fragment is currently shown, replace if needed.
+            MovieDetailFragment details = (MovieDetailFragment)
+                    getFragmentManager().findFragmentById(R.id.pop_movies_detail_view_container);
+
+            if (details == null || details.getMovieId() != movie.getId()) {
+                // Make new fragment to show this selection.
+                details = MovieDetailFragment.newInstance(movie);
+
+                //Replace fragment with new one
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.replace(R.id.pop_movies_detail_view_container,details);
+                ft.commit();
+            }
+        }
+        else{
+            Context context = getContext();
+            Intent intent = new Intent(context, MovieDetailActivity.class);
+            intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
+            context.startActivity(intent);
+        }
     }
 }

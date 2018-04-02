@@ -16,12 +16,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        PopularMoviesFragment fragment = new PopularMoviesFragment();
-        fragmentTransaction.replace(R.id.pop_movies_fragment_container, fragment);
-        fragmentTransaction.commit();
     }
 
     @Override

@@ -103,7 +103,8 @@ public class MovieContentProvider extends ContentProvider {
                 throw new android.database.SQLException("Failed to insert: Invalid Uri " + uri);
         }
 
-        getContext().getContentResolver().notify();
+
+        getContext().getContentResolver().notifyChange(uri, null);
 
         return returnUri;
     }

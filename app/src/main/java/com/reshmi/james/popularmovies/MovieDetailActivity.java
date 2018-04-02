@@ -18,18 +18,15 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        MovieDetailFragment movieDetailFragment = new MovieDetailFragment();
         Intent intent = getIntent();
         if(intent!=null){
-            Movie movie = getIntent().getParcelableExtra(MOVIE_KEY);
-            Bundle args = new Bundle();
-            args.putParcelable(MovieDetailFragment.MOVIE_DETAIL, movie);
-            movieDetailFragment.setArguments(args);
-        }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.movie_detail_fragment_container, movieDetailFragment);
-        ft.commit();
+            Movie movie = getIntent().getParcelableExtra(MOVIE_KEY);
+            MovieDetailFragment movieDetailFragment = MovieDetailFragment.newInstance(movie);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.movie_detail_fragment_container, movieDetailFragment);
+            ft.commit();
+        }
     }
 }

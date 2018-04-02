@@ -14,6 +14,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,9 +43,21 @@ import retrofit2.Response;
 
 public class MovieDetailFragment extends Fragment implements View.OnClickListener {
 
+    private static final String TAG = "MovieDetailFragment";
     public static final String MOVIE_DETAIL = "movie_detail";
+    private static final long INVALID_MOVIE_ID = -1;
     MovieDbHelper mMovieDbHelper;
     Movie mMovie;
+
+    public static MovieDetailFragment newInstance(Movie movie) {
+        MovieDetailFragment f = new MovieDetailFragment();
+
+        Bundle args = new Bundle();
+        args.putParcelable(MovieDetailFragment.MOVIE_DETAIL, movie);
+        f.setArguments(args);
+
+        return f;
+    }
 
     @Nullable
     @Override
@@ -176,6 +189,15 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                 b.setText(getString(R.string.mark_as_favorite));
                 Toast.makeText(getContext(),getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    public long getMovieId(){
+        try {
+            return mMovie.getId();
+        }
+        catch(Exception e){
+            return INVALID_MOVIE_ID;
         }
     }
 }

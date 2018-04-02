@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,25 @@ import com.reshmi.james.popularmovies.model.MoviesResponse;
 import com.reshmi.james.popularmovies.util.Utils;
 import com.squareup.picasso.Picasso;
 
-public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMoviesGridAdapter.PopularMoviesViewHolder> implements View.OnClickListener{
-    private MoviesResponse moviesResponse=null;
+public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMoviesGridAdapter.PopularMoviesViewHolder> {
+
+    public interface ListItemClickListener{
+        public void onListItemClick(View view, int position);
+    }
+
+    private static final String TAG = "PopMoviesGridAdapter";
+    private MoviesResponse mMoviesResponse=null;
+    public static ListItemClickListener sListener;
+
+    public PopularMoviesGridAdapter(ListItemClickListener listener){
+
+        try {
+            sListener = listener;
+        }
+        catch (ClassCastException e){
+            Log.e(TAG,"Calling class does not implement the ListItemClickListener");
+        }
+    }
 
     @NonNull
     @Override
@@ -32,10 +50,7 @@ public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMovies
 
         try {
 
-            Movie movie = moviesResponse.getResults()[position];
-            holder.mView.setTag(movie);
-            holder.mView.setOnClickListener(this);
-
+            Movie movie = mMoviesResponse.getResults()[position];
             String posterPath = Utils.getCompleteUrl(movie.getPosterPath());
             Picasso.get().load(posterPath).into(holder.mMoviePoster);
         }
@@ -46,40 +61,44 @@ public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMovies
 
     @Override
     public int getItemCount() {
-        if(moviesResponse!=null) {
-            return moviesResponse.getResults().length;
+        try{
+            return mMoviesResponse.getResults().length;
         }
-        return 0;
+        catch(Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public void setData(MoviesResponse response){
 
-        this.moviesResponse = response;
+        this.mMoviesResponse = response;
         notifyDataSetChanged();
     }
 
-    @Override
-    public void onClick(View view) {
 
-        Context context = view.getContext();
-        Movie movie = (Movie)view.getTag();
-        Intent intent = new Intent(context, MovieDetailActivity.class);
-        intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
-        context.startActivity(intent);
-
-    }
-
-    public static class PopularMoviesViewHolder extends RecyclerView.ViewHolder{
+    public static class PopularMoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         final ImageView mMoviePoster;
         final View mView;
-
 
         public PopularMoviesViewHolder(View view) {
             super(view);
             mView = view;
             mMoviePoster = view.findViewById(R.id.movie_poster);
+            mView.setOnClickListener(this);
+        }
 
+        @Override
+        public void onClick(View view) {
+
+            try {
+                sListener.onListItemClick(view, this.getAdapterPosition());
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                Log.e(TAG, "Error handling item click");
+            }
         }
     }
 }
