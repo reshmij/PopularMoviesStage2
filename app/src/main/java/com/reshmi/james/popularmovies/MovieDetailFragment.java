@@ -138,7 +138,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
             public void onFailure(Call<ReviewResponse> call, Throwable t) {
 
                 t.printStackTrace();
-                Utils.onError(context);
+                Toast.makeText(getContext(),getString(R.string.error_detail), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -166,7 +166,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
             @Override
             public void onFailure(Call<TrailerResponse> call, Throwable t) {
                 t.printStackTrace();
-                Utils.onError(context);
+                Toast.makeText(getContext(),getString(R.string.error_detail), Toast.LENGTH_SHORT).show();
             }
         });
     }

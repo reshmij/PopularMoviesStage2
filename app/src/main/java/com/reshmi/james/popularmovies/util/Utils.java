@@ -32,9 +32,4 @@ public class Utils {
         Toast.makeText( context, R.string.connection_error, Toast.LENGTH_LONG).show();
     }
 
-    public static void onError(Context context){
-        Toast.makeText( context, R.string.error_detail, Toast.LENGTH_LONG).show();
-    }
-
-
 }

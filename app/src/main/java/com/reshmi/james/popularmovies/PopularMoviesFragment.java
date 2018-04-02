@@ -22,6 +22,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.reshmi.james.popularmovies.adapter.PopularMoviesGridAdapter;
 import com.reshmi.james.popularmovies.database.MovieDbContract;
@@ -48,16 +50,18 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
     private boolean mDualPane;
     private MoviesResponse mMoviesResponse;
     private int mCurrentChoice = 0;
+    private ProgressBar mLoadingIndicator;
+    private TextView mErrorMessageView;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mRecyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_popular_movies, container, false);
-        setupRecyclerView();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
+        View root = inflater.inflate(R.layout.fragment_popular_movies, container, false);
+        setupUI(root);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        return mRecyclerView;
+        return root;
     }
 
     @Override
@@ -73,7 +77,7 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
         }
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
-        loadMovies(sharedPreferences, getString(R.string.sort_order_pref_key));
+        loadPreferredMovieList(sharedPreferences, getString(R.string.sort_order_pref_key));
     }
 
     @Override
@@ -89,29 +93,36 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
         sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    private void setupRecyclerView() {
+    private void setupUI(View root) {
+
+        mRecyclerView = root.findViewById(R.id.pop_movies_grid);
         mRecyclerView.setLayoutManager(new GridLayoutManager(mRecyclerView.getContext(),2));
         mRecyclerView.setItemViewCacheSize(20);
         mRecyclerView.setDrawingCacheEnabled(true);
         mRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         mRecyclerView.setAdapter(new PopularMoviesGridAdapter(this));
+
+        mErrorMessageView = root.findViewById(R.id.pop_movies_error_message);
+        mLoadingIndicator = root.findViewById(R.id.pop_movies_loading_indicator);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d(TAG, "Shared preference changed");
         if(key.equals(getString(R.string.sort_order_pref_key))){
-            loadMovies(sharedPreferences, key);
+            loadPreferredMovieList(sharedPreferences, key);
         }
     }
 
-    private void loadMovies(SharedPreferences sp, String key){
-        Log.d(TAG, "loadMovies");
-        String sortOrder = sp.getString( key, getString(R.string.sort_by_popularity_value));
-        if(sortOrder.equals(getString(R.string.sort_by_popularity_value))){
+    private void loadPreferredMovieList(SharedPreferences sp, String key){
+        Log.d(TAG, "loadPreferredMovieList");
+
+        showLoading();
+        String sortPreference = sp.getString( key, getString(R.string.sort_by_popularity_value));
+        if(sortPreference.equals(getString(R.string.sort_by_popularity_value))){
             loadPopularMovies();
         }
-        else if(sortOrder.equals(getString(R.string.sort_by_rating_value))){
+        else if(sortPreference.equals(getString(R.string.sort_by_rating_value))){
             loadTopRatedMovies();
         }
         else{
@@ -121,11 +132,14 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
 
     private void loadFromDatabase() {
         Log.d(TAG, "loadFromDatabase");
-        getActivity().getSupportLoaderManager().restartLoader( ID_MOVIE_LOADER, null, this);
+        if (getLoaderManager().getLoader(ID_MOVIE_LOADER) == null) {
+            getLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
+        } else {
+            getLoaderManager().restartLoader(ID_MOVIE_LOADER, null, this);
+        }
     }
 
     private void loadPopularMovies(){
-
         Log.d(TAG, "loadPopularMovies");
         final Context context = mRecyclerView.getContext();
         if(!Utils.isOnline(context)){
@@ -146,7 +160,7 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
             @Override
             public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
                 Log.e(TAG,"Error loading popular movies");
-                Utils.onError(context);
+                showErrorMessage();
             }
         });
     }
@@ -172,7 +186,7 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
             @Override
             public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
                 Log.e(TAG,"Error loading topRated movies");
-                Utils.onError(context);
+                showErrorMessage();
             }
         });
     }
@@ -193,16 +207,14 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-
         Log.d(TAG, "onLoadFinished");
-        if(data.getCount()>0) {
-            populateMoviesList(ProviderUtils.parseMovieResponse(data));
-        }
+        populateMoviesList(ProviderUtils.parseMovieResponse(data));
+        getLoaderManager().destroyLoader(ID_MOVIE_LOADER);
+
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader loader) {
-
         Log.d(TAG, "onLoaderReset");
         PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
         adapter.setData(null);
@@ -214,7 +226,7 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
         try {
             Movie movie = mMoviesResponse.getResults()[position];
             mCurrentChoice = position;
-            showDetails(movie);
+            populateMovieDetails(movie);
         }
         catch(Exception e){
             Log.e(TAG,"Error loading movie details");
@@ -223,18 +235,33 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
     }
 
     private void populateMoviesList(MoviesResponse moviesResponse){
+
         mMoviesResponse = moviesResponse;
+        try{
 
-        PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
-        adapter.setData(mMoviesResponse);
-        mRecyclerView.smoothScrollToPosition(mCurrentChoice);
+            if(moviesResponse.getResults().length>0){
+                showMovieList();
 
-        if(mDualPane){
-            showDetails(mMoviesResponse.getResults()[mCurrentChoice]);
+                PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
+                adapter.setData(mMoviesResponse);
+                mRecyclerView.smoothScrollToPosition(mCurrentChoice);
+
+                if(mDualPane){
+                    populateMovieDetails(mMoviesResponse.getResults()[mCurrentChoice]);
+                }
+            }
+            else{
+                //If we get a valid response object, but there are no movies to display
+                showErrorMessage();
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            showErrorMessage();
         }
     }
 
-    private void showDetails(Movie movie){
+    private void populateMovieDetails(Movie movie){
         if(mDualPane){
 
             // Check what fragment is currently shown, replace if needed.
@@ -257,5 +284,26 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
             intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
             context.startActivity(intent);
         }
+    }
+
+    private void showLoading() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mErrorMessageView.setVisibility(View.INVISIBLE);
+    }
+
+    private void showMovieList() {
+        mRecyclerView.setVisibility(View.VISIBLE);
+
+        mErrorMessageView.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+    }
+
+    private void showErrorMessage() {
+        mErrorMessageView.setVisibility(View.VISIBLE);
+
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
     }
 }
