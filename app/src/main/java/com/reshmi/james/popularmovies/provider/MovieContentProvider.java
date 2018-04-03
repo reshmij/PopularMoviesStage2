@@ -28,13 +28,19 @@ public class MovieContentProvider extends ContentProvider {
         return uriMatcher;
     }
 
-
     private MovieDbHelper mDbHelper;
+    
     @Override
     public boolean onCreate() {
         mDbHelper = new MovieDbHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         return (db == null)? false:true;
+    }
+
+    @Override
+    public void shutdown() {
+        mDbHelper.close();
+        super.shutdown();
     }
 
     @Nullable
