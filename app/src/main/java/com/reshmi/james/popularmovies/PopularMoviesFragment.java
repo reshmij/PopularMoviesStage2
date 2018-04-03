@@ -75,7 +75,11 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
         if(savedInstanceState!=null){
             mCurrentChoice = savedInstanceState.getInt(SCROLL_POSITION);
         }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
         loadPreferredMovieList(sharedPreferences, getString(R.string.sort_order_pref_key));
     }
@@ -110,7 +114,8 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d(TAG, "Shared preference changed");
         if(key.equals(getString(R.string.sort_order_pref_key))){
-            loadPreferredMovieList(sharedPreferences, key);
+            //Reset the current choice to 0 if preference has changed
+            mCurrentChoice = 0;
         }
     }
 
