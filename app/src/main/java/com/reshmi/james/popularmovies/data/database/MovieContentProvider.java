@@ -1,4 +1,4 @@
-package com.reshmi.james.popularmovies.provider;
+package com.reshmi.james.popularmovies.data.database;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -10,8 +10,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.reshmi.james.popularmovies.database.MovieDbContract;
-import com.reshmi.james.popularmovies.database.MovieDbHelper;
+import com.reshmi.james.popularmovies.data.database.MovieDbContract;
+import com.reshmi.james.popularmovies.data.database.MovieDbHelper;
 
 
 public class MovieContentProvider extends ContentProvider {

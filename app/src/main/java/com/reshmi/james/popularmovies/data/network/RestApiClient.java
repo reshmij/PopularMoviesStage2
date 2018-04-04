@@ -1,4 +1,4 @@
-package com.reshmi.james.popularmovies.rest;
+package com.reshmi.james.popularmovies.data.network;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

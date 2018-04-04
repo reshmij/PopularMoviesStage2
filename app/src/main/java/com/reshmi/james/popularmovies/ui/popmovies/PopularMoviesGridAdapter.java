@@ -1,7 +1,5 @@
-package com.reshmi.james.popularmovies.adapter;
+package com.reshmi.james.popularmovies.ui.popmovies;
 
-import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.reshmi.james.popularmovies.MovieDetailActivity;
 import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.model.Movie;
 import com.reshmi.james.popularmovies.model.MoviesResponse;

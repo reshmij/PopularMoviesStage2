@@ -4,7 +4,7 @@
     android:id="@+id/settings_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.reshmi.james.popularmovies.SettingsFragment"
-    tools:context="com.reshmi.james.popularmovies.SettingsActivity">
+    android:name="com.reshmi.james.popularmovies.ui.settings.SettingsFragment"
+    tools:context="com.reshmi.james.popularmovies.ui.settings.SettingsActivity">
 
 </fragment>

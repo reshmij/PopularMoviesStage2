@@ -1,4 +1,4 @@
-package com.reshmi.james.popularmovies.database;
+package com.reshmi.james.popularmovies.data.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,11 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.reshmi.james.popularmovies.database.MovieDbContract.MovieEntry;
+import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
 import com.reshmi.james.popularmovies.model.Movie;
-import com.reshmi.james.popularmovies.util.Utils;
 
-import static com.reshmi.james.popularmovies.database.MovieDbContract.*;
+import static com.reshmi.james.popularmovies.data.database.MovieDbContract.*;
 
 /**
  * Created by reshmijames on 3/22/18.

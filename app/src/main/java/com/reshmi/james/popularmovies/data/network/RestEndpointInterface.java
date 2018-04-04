@@ -1,4 +1,4 @@
-package com.reshmi.james.popularmovies.rest;
+package com.reshmi.james.popularmovies.data.network;
 
 import com.reshmi.james.popularmovies.model.MoviesResponse;
 import com.reshmi.james.popularmovies.model.ReviewResponse;

@@ -1,13 +1,10 @@
-package com.reshmi.james.popularmovies;
+package com.reshmi.james.popularmovies.ui.popmovies;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,16 +22,15 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.reshmi.james.popularmovies.adapter.PopularMoviesGridAdapter;
-import com.reshmi.james.popularmovies.database.MovieDbContract;
-import com.reshmi.james.popularmovies.database.MovieDbContract.MovieEntry;
-import com.reshmi.james.popularmovies.database.MovieDbHelper;
+import com.reshmi.james.popularmovies.R;
+import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
 import com.reshmi.james.popularmovies.model.Movie;
 import com.reshmi.james.popularmovies.model.MoviesResponse;
-import com.reshmi.james.popularmovies.provider.ProviderUtils;
-import com.reshmi.james.popularmovies.rest.RestApiClient;
-import com.reshmi.james.popularmovies.rest.RestEndpointInterface;
-import com.reshmi.james.popularmovies.util.TestUtils;
+import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailActivity;
+import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailFragment;
+import com.reshmi.james.popularmovies.util.ProviderUtils;
+import com.reshmi.james.popularmovies.data.network.RestApiClient;
+import com.reshmi.james.popularmovies.data.network.RestEndpointInterface;
 import com.reshmi.james.popularmovies.util.Utils;
 
 import retrofit2.Call;

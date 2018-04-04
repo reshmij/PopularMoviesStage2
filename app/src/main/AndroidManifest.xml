@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.popmovies.PopularMoviesActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,15 +23,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MovieDetailActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".ui.moviedetail.MovieDetailActivity"
+            android:parentActivityName=".ui.popmovies.PopularMoviesActivity" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".ui.popmovies.PopularMoviesActivity"/>
         <provider
             android:authorities="com.reshmi.james.popularmovies"
-            android:name=".provider.MovieContentProvider"
+            android:name=".data.database.MovieContentProvider"
             android:exported="false"/>
     </application>
 

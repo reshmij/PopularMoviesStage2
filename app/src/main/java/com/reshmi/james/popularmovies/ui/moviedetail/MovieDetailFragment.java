@@ -1,20 +1,14 @@
-package com.reshmi.james.popularmovies;
+package com.reshmi.james.popularmovies.ui.moviedetail;
 
 
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,17 +17,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.reshmi.james.popularmovies.adapter.MovieReviewsListAdapter;
-import com.reshmi.james.popularmovies.adapter.MovieTrailerListAdapter;
-import com.reshmi.james.popularmovies.database.MovieDbContract;
-import com.reshmi.james.popularmovies.database.MovieDbContract.MovieEntry;
-import com.reshmi.james.popularmovies.database.MovieDbHelper;
+import com.reshmi.james.popularmovies.R;
+import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
+import com.reshmi.james.popularmovies.data.database.MovieDbHelper;
 import com.reshmi.james.popularmovies.model.Movie;
 import com.reshmi.james.popularmovies.model.ReviewResponse;
 import com.reshmi.james.popularmovies.model.TrailerResponse;
-import com.reshmi.james.popularmovies.provider.ProviderUtils;
-import com.reshmi.james.popularmovies.rest.RestApiClient;
-import com.reshmi.james.popularmovies.rest.RestEndpointInterface;
+import com.reshmi.james.popularmovies.util.ProviderUtils;
+import com.reshmi.james.popularmovies.data.network.RestApiClient;
+import com.reshmi.james.popularmovies.data.network.RestEndpointInterface;
 import com.reshmi.james.popularmovies.util.Utils;
 import com.squareup.picasso.Picasso;
 

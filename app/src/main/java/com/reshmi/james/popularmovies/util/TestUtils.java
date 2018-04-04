@@ -4,19 +4,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.provider.BaseColumns;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.reshmi.james.popularmovies.database.MovieDbContract;
-import com.reshmi.james.popularmovies.database.MovieDbHelper;
+import com.reshmi.james.popularmovies.data.database.MovieDbContract;
+import com.reshmi.james.popularmovies.data.database.MovieDbHelper;
 import com.reshmi.james.popularmovies.model.Movie;
 import com.reshmi.james.popularmovies.model.MoviesResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.reshmi.james.popularmovies.database.MovieDbContract.MovieEntry;
+import static com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
 
 
 public class TestUtils {
