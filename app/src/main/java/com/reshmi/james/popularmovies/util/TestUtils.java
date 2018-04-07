@@ -4,13 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.BaseColumns;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.reshmi.james.popularmovies.data.database.MovieDbContract;
 import com.reshmi.james.popularmovies.data.database.MovieDbHelper;
-import com.reshmi.james.popularmovies.model.Movie;
-import com.reshmi.james.popularmovies.model.MoviesResponse;
+import com.reshmi.james.popularmovies.data.network.model.Movie;
+import com.reshmi.james.popularmovies.data.network.model.MoviesResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +19,9 @@ import java.util.List;
 import static com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
 
 
-public class TestUtils {
+public final class TestUtils {
 
+    private TestUtils(){}
 
     @SuppressWarnings("unused")
     public static MoviesResponse loadPopularMovies ( ){
@@ -33,7 +35,6 @@ public class TestUtils {
         movies.add(new Movie("Star Wars: The Last Jedi","https://image.tmdb.org/t/p/w185/kOVEVeg59E0wsnXmF9nrh6OmWII.jpg"));
 
         return new MoviesResponse(movies.toArray(new Movie[movies.size()]));
-
     }
 
     public static void testDb(Context context) {
@@ -41,8 +42,6 @@ public class TestUtils {
         MovieDbHelper dbHelper = new MovieDbHelper(context);
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        //db.execSQL("DELETE from "+ MovieEntry.TABLE_NAME);
 
         // Create a new map of values, where column names are the keys
         ContentValues cv = new ContentValues();
@@ -62,7 +61,7 @@ public class TestUtils {
 
 
         if (rowId == -1) Toast.makeText(context, "Error inserting data", Toast.LENGTH_SHORT).show();
-/*
+
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
@@ -72,7 +71,7 @@ public class TestUtils {
                 MovieEntry.COLUMN_NAME_ORIGINAL_TITLE,
                 MovieEntry.COLUMN_NAME_VOTE_AVERAGE
 
-        };*/
+        };
 
         // How you want the results sorted in the resulting Cursor
         String sortOrder =
@@ -99,9 +98,10 @@ public class TestUtils {
             itemIds.add(itemId);
             Log.d("cursor", "itemId" + itemId + "voteAvg=" + voteAverage);
         }
-        //cursor.close();
+
 
         MoviesResponse response = MovieDbContract.parseMovieResponse(cursor);
         Log.d("cursor", response.toString());
+        cursor.close();
     }
 }

@@ -1,13 +1,16 @@
 package com.reshmi.james.popularmovies.ui.popmovies;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.reshmi.james.popularmovies.Injector;
 import com.reshmi.james.popularmovies.R;
+import com.reshmi.james.popularmovies.data.LoaderProvider;
 import com.reshmi.james.popularmovies.ui.settings.SettingsActivity;
 
 public class PopularMoviesActivity extends AppCompatActivity {
@@ -17,6 +20,12 @@ public class PopularMoviesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        LoaderProvider loaderProvider = new LoaderProvider(this);
+        PopularMoviesFragment popularMoviesFragment = (PopularMoviesFragment)getSupportFragmentManager().findFragmentById(R.id.pop_movies_fragment);
+        PopularMoviesPresenter popularMoviesPresenter = new PopularMoviesPresenter(popularMoviesFragment,
+                Injector.getMoviesRepository(getApplicationContext()),
+                loaderProvider,
+                getSupportLoaderManager());
     }
 
     @Override

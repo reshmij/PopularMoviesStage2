@@ -20,13 +20,14 @@ import android.widget.Toast;
 import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
 import com.reshmi.james.popularmovies.data.database.MovieDbHelper;
-import com.reshmi.james.popularmovies.model.Movie;
-import com.reshmi.james.popularmovies.model.ReviewResponse;
-import com.reshmi.james.popularmovies.model.TrailerResponse;
+import com.reshmi.james.popularmovies.data.network.model.Movie;
+import com.reshmi.james.popularmovies.data.network.model.ReviewResponse;
+import com.reshmi.james.popularmovies.data.network.model.TrailerResponse;
+import com.reshmi.james.popularmovies.util.ConnectionUtils;
 import com.reshmi.james.popularmovies.util.ProviderUtils;
 import com.reshmi.james.popularmovies.data.network.RestApiClient;
 import com.reshmi.james.popularmovies.data.network.RestEndpointInterface;
-import com.reshmi.james.popularmovies.util.Utils;
+import com.reshmi.james.popularmovies.util.FormatUtils;
 import com.squareup.picasso.Picasso;
 
 import retrofit2.Call;
@@ -77,9 +78,9 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
             title.setText(movie.getOriginalTitle());
             releaseDate.setText(movie.getReleaseDate());
             synopsis.setText(movie.getOverview());
-            userRating.setText(Utils.formatRatingString(movie.getVoteAverage()));
+            userRating.setText(FormatUtils.formatRatingString(movie.getVoteAverage()));
 
-            String posterPath = Utils.getCompleteUrl(movie.getPosterPath());
+            String posterPath = FormatUtils.getCompleteUrl(movie.getPosterPath());
             Picasso.get().load(posterPath).into(thumbnail);
 
             RecyclerView trailerList = root.findViewById(R.id.movie_detail_trailer_list);
@@ -109,8 +110,8 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
     private void loadReviews(final RecyclerView reviewList, Movie movie) {
         final Context context = reviewList.getContext();
-        if(!Utils.isOnline(context)){
-            Utils.onConnectionError(context);
+        if(!ConnectionUtils.isOnline(context)){
+            ConnectionUtils.onConnectionError(context);
             return;
         }
 
@@ -138,8 +139,8 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
     private void loadTrailers(final RecyclerView trailerList, Movie movie) {
         final Context context = trailerList.getContext();
-        if(!Utils.isOnline(context)){
-            Utils.onConnectionError(context);
+        if(!ConnectionUtils.isOnline(context)){
+            ConnectionUtils.onConnectionError(context);
             return;
         }
 

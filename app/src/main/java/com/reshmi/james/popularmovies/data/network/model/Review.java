@@ -1,4 +1,4 @@
-package com.reshmi.james.popularmovies.model;
+package com.reshmi.james.popularmovies.data.network.model;
 
 import com.google.gson.annotations.SerializedName;
 

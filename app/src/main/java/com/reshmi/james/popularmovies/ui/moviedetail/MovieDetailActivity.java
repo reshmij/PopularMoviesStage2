@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.reshmi.james.popularmovies.R;
-import com.reshmi.james.popularmovies.model.Movie;
+import com.reshmi.james.popularmovies.data.network.model.Movie;
 
 public class MovieDetailActivity extends AppCompatActivity {
 

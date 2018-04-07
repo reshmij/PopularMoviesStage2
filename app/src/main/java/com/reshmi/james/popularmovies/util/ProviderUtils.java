@@ -3,10 +3,12 @@ package com.reshmi.james.popularmovies.util;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.reshmi.james.popularmovies.data.database.MovieDbContract;
 import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
-import com.reshmi.james.popularmovies.model.Movie;
-import com.reshmi.james.popularmovies.model.MoviesResponse;
+import com.reshmi.james.popularmovies.data.network.model.Movie;
+import com.reshmi.james.popularmovies.data.network.model.MoviesResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProviderUtils {
 
@@ -14,14 +16,14 @@ public class ProviderUtils {
 
     }
 
-    public static MoviesResponse parseMovieResponse(Cursor cursor){
+    public static List<Movie> parseMovieResponse(Cursor cursor){
 
         int size = cursor.getCount();
         if(size!=0) {
-            Movie[] movies = new Movie[size];
+            List<Movie> movies = new ArrayList<Movie>();
             cursor.moveToFirst();
             for (int i = 0; i < size; i++) {
-                movies[i] = new Movie(
+                movies.add(new Movie(
                         cursor.getFloat(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_VOTE_AVERAGE)),
                         cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_BACKDROP_PATH)),
                         cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_ADULT))>0,
@@ -36,12 +38,12 @@ public class ProviderUtils {
                         cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_POSTER_PATH)),
                         cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_VIDEO))>0,
                         cursor.getDouble(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_POPULARITY))
-                );
+                ));
 
                 cursor.moveToNext();
             }
 
-            return new MoviesResponse(movies);
+            return movies;
         }
 
         return null;

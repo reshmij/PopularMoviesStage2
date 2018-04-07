@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.reshmi.james.popularmovies.R;
-import com.reshmi.james.popularmovies.model.Trailer;
-import com.reshmi.james.popularmovies.model.TrailerResponse;
+import com.reshmi.james.popularmovies.data.network.model.Trailer;
+import com.reshmi.james.popularmovies.data.network.model.TrailerResponse;
 
 public class MovieTrailerListAdapter extends RecyclerView.Adapter<MovieTrailerListAdapter.MovieTrailerViewHolder> implements View.OnClickListener{
 

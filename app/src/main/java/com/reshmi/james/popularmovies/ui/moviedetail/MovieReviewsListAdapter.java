@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.reshmi.james.popularmovies.R;
-import com.reshmi.james.popularmovies.model.Review;
-import com.reshmi.james.popularmovies.model.ReviewResponse;
+import com.reshmi.james.popularmovies.data.network.model.Review;
+import com.reshmi.james.popularmovies.data.network.model.ReviewResponse;
 
 public class MovieReviewsListAdapter extends RecyclerView.Adapter<MovieReviewsListAdapter.MovieReviewViewHolder> {
 

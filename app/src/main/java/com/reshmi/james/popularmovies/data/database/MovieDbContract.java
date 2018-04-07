@@ -4,8 +4,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.reshmi.james.popularmovies.model.Movie;
-import com.reshmi.james.popularmovies.model.MoviesResponse;
+import com.reshmi.james.popularmovies.data.network.model.Movie;
+import com.reshmi.james.popularmovies.data.network.model.MoviesResponse;
 
 /**
  * Created by reshmijames on 3/22/18.

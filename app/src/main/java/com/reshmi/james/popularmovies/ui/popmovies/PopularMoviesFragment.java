@@ -24,31 +24,33 @@ import android.widget.TextView;
 
 import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
-import com.reshmi.james.popularmovies.model.Movie;
-import com.reshmi.james.popularmovies.model.MoviesResponse;
+import com.reshmi.james.popularmovies.data.network.model.Movie;
+import com.reshmi.james.popularmovies.data.network.model.MoviesResponse;
 import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailActivity;
 import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailFragment;
+import com.reshmi.james.popularmovies.util.ConnectionUtils;
 import com.reshmi.james.popularmovies.util.ProviderUtils;
 import com.reshmi.james.popularmovies.data.network.RestApiClient;
 import com.reshmi.james.popularmovies.data.network.RestEndpointInterface;
-import com.reshmi.james.popularmovies.util.Utils;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PopularMoviesFragment extends Fragment implements PopularMoviesGridAdapter.ListItemClickListener,SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class PopularMoviesFragment extends Fragment implements PopularMoviesContract.View, PopularMoviesGridAdapter.ListItemClickListener,SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "PopularMoviesFragment";
-    private static final int ID_MOVIE_LOADER = 104;
     private static final String SCROLL_POSITION = "scroll_position";
     private RecyclerView mRecyclerView;
     private boolean mDualPane;
-    private MoviesResponse mMoviesResponse;
+    private List<Movie> mMovies;
     private int mCurrentChoice = 0;
     private ProgressBar mLoadingIndicator;
     private TextView mErrorMessageView;
 
+    private PopularMoviesContract.Presenter mPresenter;
 
     @Nullable
     @Override
@@ -63,7 +65,6 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         //Check if we are in dual pane mode
         View detailsFrame = getActivity().findViewById(R.id.pop_movies_detail_view_container);
         mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
@@ -94,7 +95,6 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
     }
 
     private void setupUI(View root) {
-
         mRecyclerView = root.findViewById(R.id.pop_movies_grid);
         mRecyclerView.setLayoutManager(new GridLayoutManager(mRecyclerView.getContext(),2));
         mRecyclerView.setItemViewCacheSize(20);
@@ -118,7 +118,6 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
     private void loadPreferredMovieList(SharedPreferences sp, String key){
         Log.d(TAG, "loadPreferredMovieList");
 
-        showLoading();
         String sortPreference = sp.getString( key, getString(R.string.sort_by_popularity_value));
         if(sortPreference.equals(getString(R.string.sort_by_popularity_value))){
             loadPopularMovies();
@@ -127,107 +126,38 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
             loadTopRatedMovies();
         }
         else{
-            loadFromDatabase();
+            loadFavoriteMovies();
         }
     }
 
-    private void loadFromDatabase() {
-        Log.d(TAG, "loadFromDatabase");
-        if (getLoaderManager().getLoader(ID_MOVIE_LOADER) == null) {
-            getLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
-        } else {
-            getLoaderManager().restartLoader(ID_MOVIE_LOADER, null, this);
-        }
+    private void loadFavoriteMovies() {
+        mPresenter.loadFavoriteMovies();
     }
 
     private void loadPopularMovies(){
-        Log.d(TAG, "loadPopularMovies");
-        final Context context = mRecyclerView.getContext();
-        if(!Utils.isOnline(context)){
-            Utils.onConnectionError(context);
-            return;
-        }
-
-        RestEndpointInterface apiService =
-                RestApiClient.getClient().create(RestEndpointInterface.class);
-
-        Call<MoviesResponse> call = apiService.getPopularMovies(getString(R.string.api_key));
-        call.enqueue(new Callback<MoviesResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
-                populateMoviesList(response.body());
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
-                Log.e(TAG,"Error loading popular movies");
-                showErrorMessage();
-            }
-        });
+        mPresenter.loadPopularMovies();
     }
 
     private void loadTopRatedMovies(){
-        Log.d(TAG, "loadTopRatedMovies");
-        final Context context = mRecyclerView.getContext();
-        if(!Utils.isOnline(context)){
-            Utils.onConnectionError(context);
-            return;
-        }
-
-        RestEndpointInterface apiService =
-                RestApiClient.getClient().create(RestEndpointInterface.class);
-
-        Call<MoviesResponse> call = apiService.getTopRatedMovies(getString(R.string.api_key));
-        call.enqueue(new Callback<MoviesResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
-                populateMoviesList(response.body());
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
-                Log.e(TAG,"Error loading topRated movies");
-                showErrorMessage();
-            }
-        });
-    }
-
-
-    @NonNull
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-
-        Log.d(TAG, "onCreateLoader");
-        return new CursorLoader(getContext(),
-                MovieEntry.CONTENT_URI,
-                null,
-                null,
-                null,
-                null);
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-        Log.d(TAG, "onLoadFinished");
-        populateMoviesList(ProviderUtils.parseMovieResponse(data));
-        getLoaderManager().destroyLoader(ID_MOVIE_LOADER);
-
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader loader) {
-        Log.d(TAG, "onLoaderReset");
-        PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
-        adapter.setData(null);
+        mPresenter.loadTopRatedMovies();
     }
 
     @Override
     public void onListItemClick(View view, int position) {
 
         try {
-            Movie movie = mMoviesResponse.getResults()[position];
+            Movie movie = mMovies.get(position);
             mCurrentChoice = position;
-            populateMovieDetails(movie);
+            if(mDualPane){
+                populateMovieDetails(movie);
+            }
+            else{
+                //Not dual pane, open the movie detail activity
+                Context context = getContext();
+                Intent intent = new Intent(context, MovieDetailActivity.class);
+                intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
+                context.startActivity(intent);
+            }
         }
         catch(Exception e){
             Log.e(TAG,"Error loading movie details");
@@ -235,76 +165,70 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesGrid
         }
     }
 
-    private void populateMoviesList(MoviesResponse moviesResponse){
-
-        mMoviesResponse = moviesResponse;
-        try{
-
-            if(moviesResponse.getResults().length>0){
-                showMovieList();
-
-                PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
-                adapter.setData(mMoviesResponse);
-                mRecyclerView.smoothScrollToPosition(mCurrentChoice);
-
-                if(mDualPane){
-                    populateMovieDetails(mMoviesResponse.getResults()[mCurrentChoice]);
-                }
-            }
-            else{
-                //If we get a valid response object, but there are no movies to display
-                showErrorMessage();
-            }
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            showErrorMessage();
-        }
-    }
-
     private void populateMovieDetails(Movie movie){
-        if(mDualPane){
+        // Check what fragment is currently shown, replace if needed.
+        MovieDetailFragment details = (MovieDetailFragment)
+                getFragmentManager().findFragmentById(R.id.pop_movies_detail_view_container);
 
-            // Check what fragment is currently shown, replace if needed.
-            MovieDetailFragment details = (MovieDetailFragment)
-                    getFragmentManager().findFragmentById(R.id.pop_movies_detail_view_container);
+        if (details == null || details.getMovieId() != movie.getId()) {
+            // Make new fragment to show this selection.
+            details = MovieDetailFragment.newInstance(movie);
 
-            if (details == null || details.getMovieId() != movie.getId()) {
-                // Make new fragment to show this selection.
-                details = MovieDetailFragment.newInstance(movie);
-
-                //Replace fragment with new one
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.pop_movies_detail_view_container,details);
-                ft.commit();
-            }
-        }
-        else{
-            Context context = getContext();
-            Intent intent = new Intent(context, MovieDetailActivity.class);
-            intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
-            context.startActivity(intent);
+            //Replace fragment with new one
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.pop_movies_detail_view_container,details);
+            ft.commit();
         }
     }
 
-    private void showLoading() {
+    @Override
+    public void showProgressIndicator() {
         mLoadingIndicator.setVisibility(View.VISIBLE);
 
         mRecyclerView.setVisibility(View.INVISIBLE);
         mErrorMessageView.setVisibility(View.INVISIBLE);
     }
 
-    private void showMovieList() {
+    @Override
+    public void showMovies(List<Movie> movies) {
         mRecyclerView.setVisibility(View.VISIBLE);
-
         mErrorMessageView.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+
+        mMovies = movies;
+        PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
+        adapter.setData(mMovies);
+        mRecyclerView.smoothScrollToPosition(mCurrentChoice);
+
+        if(mDualPane){
+            populateMovieDetails(movies.get(mCurrentChoice));
+        }
+    }
+
+    @Override
+    public void showErrorMessage() {
+        mErrorMessageView.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
         mLoadingIndicator.setVisibility(View.INVISIBLE);
     }
 
-    private void showErrorMessage() {
-        mErrorMessageView.setVisibility(View.VISIBLE);
+    @Override
+    public boolean isNetworkConnected() {
+        return ConnectionUtils.isOnline(getContext());
+    }
 
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        mLoadingIndicator.setVisibility(View.INVISIBLE);
+    @Override
+    public void showConnectionErrorMessage() {
+        ConnectionUtils.onConnectionError(getContext());
+    }
+
+    @Override
+    public String getApiKey() {
+        return getString(R.string.api_key);
+    }
+
+    @Override
+    public void setPresenter(PopularMoviesContract.Presenter presenter) {
+        mPresenter = presenter;
     }
 }

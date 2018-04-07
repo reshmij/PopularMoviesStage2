@@ -9,10 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.reshmi.james.popularmovies.R;
-import com.reshmi.james.popularmovies.model.Movie;
-import com.reshmi.james.popularmovies.model.MoviesResponse;
-import com.reshmi.james.popularmovies.util.Utils;
+import com.reshmi.james.popularmovies.data.network.model.Movie;
+import com.reshmi.james.popularmovies.data.network.model.MoviesResponse;
+import com.reshmi.james.popularmovies.util.FormatUtils;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMoviesGridAdapter.PopularMoviesViewHolder> {
 
@@ -21,11 +23,10 @@ public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMovies
     }
 
     private static final String TAG = "PopMoviesGridAdapter";
-    private MoviesResponse mMoviesResponse=null;
+    private List<Movie> movies;
     public static ListItemClickListener sListener;
 
     public PopularMoviesGridAdapter(ListItemClickListener listener){
-
         try {
             sListener = listener;
         }
@@ -37,18 +38,16 @@ public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMovies
     @NonNull
     @Override
     public PopularMoviesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.popular_movies_grid_item_layout,parent, false);
         return new PopularMoviesViewHolder(root);
     }
 
     @Override
     public void onBindViewHolder(@NonNull PopularMoviesViewHolder holder, int position) {
-
         try {
 
-            Movie movie = mMoviesResponse.getResults()[position];
-            String posterPath = Utils.getCompleteUrl(movie.getPosterPath());
+            Movie movie = movies.get(position);
+            String posterPath = FormatUtils.getCompleteUrl(movie.getPosterPath());
             Picasso.get().load(posterPath).into(holder.mMoviePoster);
         }
         catch(Exception e){
@@ -59,20 +58,18 @@ public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMovies
     @Override
     public int getItemCount() {
         try{
-            return mMoviesResponse.getResults().length;
+            return movies.size();
         }
         catch(Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "List data not set");
             return 0;
         }
     }
 
-    public void setData(MoviesResponse response){
-
-        this.mMoviesResponse = response;
+    public void setData(List<Movie> movies){
+        this.movies = movies;
         notifyDataSetChanged();
     }
-
 
     public static class PopularMoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 

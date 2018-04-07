@@ -1,8 +1,8 @@
 package com.reshmi.james.popularmovies.data.network;
 
-import com.reshmi.james.popularmovies.model.MoviesResponse;
-import com.reshmi.james.popularmovies.model.ReviewResponse;
-import com.reshmi.james.popularmovies.model.TrailerResponse;
+import com.reshmi.james.popularmovies.data.network.model.MoviesResponse;
+import com.reshmi.james.popularmovies.data.network.model.ReviewResponse;
+import com.reshmi.james.popularmovies.data.network.model.TrailerResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

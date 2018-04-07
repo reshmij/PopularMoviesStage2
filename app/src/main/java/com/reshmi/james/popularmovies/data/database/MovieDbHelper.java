@@ -7,9 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
-import com.reshmi.james.popularmovies.model.Movie;
-
-import static com.reshmi.james.popularmovies.data.database.MovieDbContract.*;
+import com.reshmi.james.popularmovies.data.network.model.Movie;
 
 /**
  * Created by reshmijames on 3/22/18.

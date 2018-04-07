@@ -1,4 +1,4 @@
-package com.reshmi.james.popularmovies.data.database;
+package com.reshmi.james.popularmovies.data;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
