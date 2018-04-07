@@ -10,7 +10,6 @@ import android.widget.ImageView;
 
 import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.network.model.Movie;
-import com.reshmi.james.popularmovies.data.network.model.MoviesResponse;
 import com.reshmi.james.popularmovies.util.FormatUtils;
 import com.squareup.picasso.Picasso;
 

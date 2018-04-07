@@ -2,6 +2,7 @@ package com.reshmi.james.popularmovies.data;
 
 import android.content.ContentResolver;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.reshmi.james.popularmovies.data.database.MovieDbContract;
 import com.reshmi.james.popularmovies.data.network.RestEndpointInterface;
@@ -17,6 +18,7 @@ import retrofit2.Response;
 
 public class MoviesRepository implements MoviesDataSource {
 
+    private static final String TAG="MoviesRepository";
     private static MoviesRepository sInstance;
     RestEndpointInterface mApiService;
     ContentResolver mContentResolver;
@@ -41,7 +43,13 @@ public class MoviesRepository implements MoviesDataSource {
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
-                callback.onMoviesLoaded(Arrays.asList(response.body().getResults()));
+                try{
+                    callback.onMoviesLoaded(Arrays.asList(response.body().getResults()));
+                }
+                catch (Exception e){
+                    Log.e(TAG,response.message());
+                    callback.onDataNotAvailable();
+                }
             }
 
             @Override
@@ -57,7 +65,13 @@ public class MoviesRepository implements MoviesDataSource {
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
-                callback.onMoviesLoaded(Arrays.asList(response.body().getResults()));
+                try{
+                    callback.onMoviesLoaded(Arrays.asList(response.body().getResults()));
+                }
+                catch (Exception e){
+                    Log.e(TAG,response.message());
+                    callback.onDataNotAvailable();
+                }
             }
 
             @Override

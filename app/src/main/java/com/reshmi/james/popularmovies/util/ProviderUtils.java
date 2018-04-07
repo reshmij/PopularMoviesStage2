@@ -5,12 +5,11 @@ import android.database.Cursor;
 
 import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
 import com.reshmi.james.popularmovies.data.network.model.Movie;
-import com.reshmi.james.popularmovies.data.network.model.MoviesResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProviderUtils {
+public final class ProviderUtils {
 
     private ProviderUtils(){
 

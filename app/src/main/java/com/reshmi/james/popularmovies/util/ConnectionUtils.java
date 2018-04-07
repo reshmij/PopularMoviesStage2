@@ -6,10 +6,6 @@ import android.widget.Toast;
 
 import com.reshmi.james.popularmovies.R;
 
-/**
- * Created by reshmijames on 4/4/18.
- */
-
 public final class ConnectionUtils {
 
     private ConnectionUtils(){}

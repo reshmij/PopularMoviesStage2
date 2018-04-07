@@ -41,38 +41,4 @@ public final class MovieDbContract {
         public static final String COLUMN_NAME_VIDEO = "video";
         public static final String COLUMN_NAME_POPULARITY = "popularity";
     }
-
-    public static MoviesResponse parseMovieResponse(Cursor cursor){
-
-        int size = cursor.getCount();
-        if(size!=0) {
-            Movie[] movies = new Movie[size];
-            cursor.moveToFirst();
-            for (int i = 0; i < size; i++) {
-                movies[i] = new Movie(
-                        cursor.getFloat(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_VOTE_AVERAGE)),
-                        cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_BACKDROP_PATH)),
-                        cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_ADULT))>0,
-                        cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_MOVIE_ID)),
-                        cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_TITLE)),
-                        cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_OVERVIEW)),
-                        cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_ORIGINAL_LANGUAGE)),
-                        null,
-                        cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_RELEASE_DATE)),
-                        cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_ORIGINAL_TITLE)),
-                        cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_VOTE_COUNT)),
-                        cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_POSTER_PATH)),
-                        cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_VIDEO))>0,
-                        cursor.getDouble(cursor.getColumnIndex(MovieEntry.COLUMN_NAME_POPULARITY))
-                );
-
-                cursor.moveToNext();
-            }
-
-            return new MoviesResponse(movies);
-        }
-
-        return null;
-    }
-
 }

@@ -56,32 +56,6 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public void addToFavorites(Movie movie){
-
-        ContentValues cv = new ContentValues();
-        cv.put(MovieEntry.COLUMN_NAME_VOTE_AVERAGE, movie.getVoteAverage());
-        cv.put(MovieEntry.COLUMN_NAME_BACKDROP_PATH, movie.getPosterPath());
-        cv.put(MovieEntry.COLUMN_NAME_ADULT, movie.isAdult()?1:0);
-        cv.put(MovieEntry.COLUMN_NAME_MOVIE_ID, movie.getId());
-        cv.put(MovieEntry.COLUMN_NAME_TITLE, movie.getTitle());
-        cv.put(MovieEntry.COLUMN_NAME_OVERVIEW, movie.getOverview());
-        cv.put(MovieEntry.COLUMN_NAME_RELEASE_DATE, movie.getReleaseDate());
-        cv.put(MovieEntry.COLUMN_NAME_ORIGINAL_TITLE, movie.getOriginalTitle());
-        cv.put(MovieEntry.COLUMN_NAME_VOTE_COUNT, movie.getVoteCount());
-        cv.put(MovieEntry.COLUMN_NAME_POSTER_PATH, movie.getPosterPath());
-        cv.put(MovieEntry.COLUMN_NAME_VIDEO, movie.isVideo()?1:0);
-        cv.put(MovieEntry.COLUMN_NAME_POPULARITY, movie.getPopularity());
-
-        SQLiteDatabase db = getWritableDatabase();
-        long rowId = db.insert(MovieEntry.TABLE_NAME, null, cv);
-
-    }
-
-    public void removeFromFavorites(Movie movie){
-        SQLiteDatabase db = getWritableDatabase();
-        db.delete(MovieEntry.TABLE_NAME, MovieEntry.COLUMN_NAME_MOVIE_ID + "=" + movie.getId(), null);
-    }
-
     public boolean isMovieMarkedAsFavorite(Movie movie){
         SQLiteDatabase db = getReadableDatabase();
         String[] projection = {

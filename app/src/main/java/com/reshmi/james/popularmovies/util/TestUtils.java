@@ -37,6 +37,7 @@ public final class TestUtils {
         return new MoviesResponse(movies.toArray(new Movie[movies.size()]));
     }
 
+    @SuppressWarnings("unused")
     public static void testDb(Context context) {
 
         MovieDbHelper dbHelper = new MovieDbHelper(context);
@@ -100,8 +101,8 @@ public final class TestUtils {
         }
 
 
-        MoviesResponse response = MovieDbContract.parseMovieResponse(cursor);
-        Log.d("cursor", response.toString());
+        List<Movie> movies = ProviderUtils.parseMovieResponse(cursor);
+        Log.d("cursor", "Found "+ movies.size() + " movies.");
         cursor.close();
     }
 }

@@ -3,16 +3,12 @@ package com.reshmi.james.popularmovies.ui.popmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,21 +19,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.reshmi.james.popularmovies.R;
-import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
 import com.reshmi.james.popularmovies.data.network.model.Movie;
-import com.reshmi.james.popularmovies.data.network.model.MoviesResponse;
 import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailActivity;
 import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailFragment;
 import com.reshmi.james.popularmovies.util.ConnectionUtils;
-import com.reshmi.james.popularmovies.util.ProviderUtils;
-import com.reshmi.james.popularmovies.data.network.RestApiClient;
-import com.reshmi.james.popularmovies.data.network.RestEndpointInterface;
 
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class PopularMoviesFragment extends Fragment implements PopularMoviesContract.View, PopularMoviesGridAdapter.ListItemClickListener,SharedPreferences.OnSharedPreferenceChangeListener {
 
