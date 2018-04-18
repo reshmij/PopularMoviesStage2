@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,9 @@ import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
 import com.reshmi.james.popularmovies.data.database.MovieDbHelper;
 import com.reshmi.james.popularmovies.data.network.model.Movie;
+import com.reshmi.james.popularmovies.data.network.model.Review;
 import com.reshmi.james.popularmovies.data.network.model.ReviewResponse;
+import com.reshmi.james.popularmovies.data.network.model.Trailer;
 import com.reshmi.james.popularmovies.data.network.model.TrailerResponse;
 import com.reshmi.james.popularmovies.util.ConnectionUtils;
 import com.reshmi.james.popularmovies.util.ProviderUtils;
@@ -30,17 +33,21 @@ import com.reshmi.james.popularmovies.data.network.RestEndpointInterface;
 import com.reshmi.james.popularmovies.util.FormatUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MovieDetailFragment extends Fragment implements View.OnClickListener {
+public class MovieDetailFragment extends Fragment implements View.OnClickListener, MovieDetailContract.View {
 
     private static final String TAG = "MovieDetailFragment";
     public static final String MOVIE_DETAIL = "movie_detail";
-    private static final long INVALID_MOVIE_ID = -1;
     MovieDbHelper mMovieDbHelper;
     Movie mMovie;
+    MovieDetailContract.Presenter mPresenter;
+    RecyclerView mTrailerList;
+    RecyclerView mReviewList;
 
     public static MovieDetailFragment newInstance(Movie movie) {
         MovieDetailFragment f = new MovieDetailFragment();
@@ -57,6 +64,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
+        Log.d(TAG, "onCreateView");
         mMovieDbHelper = new MovieDbHelper(getContext());
 
         Bundle args = getArguments();
@@ -64,6 +72,18 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         populateUI(root,mMovie);
 
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+        loadDetails();
+    }
+
+    private void loadDetails() {
+        mPresenter.loadTrailers(mMovie.getId());
+        mPresenter.loadReviews(mMovie.getId());
     }
 
     private void populateUI(View root, Movie movie){
@@ -83,19 +103,17 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
             String posterPath = FormatUtils.getCompleteUrl(movie.getPosterPath());
             Picasso.get().load(posterPath).into(thumbnail);
 
-            RecyclerView trailerList = root.findViewById(R.id.movie_detail_trailer_list);
-            trailerList.setLayoutManager(new LinearLayoutManager(getContext()));
-            trailerList.setAdapter(new MovieTrailerListAdapter());
-            trailerList.setHasFixedSize(true);
-            trailerList.setNestedScrollingEnabled(false);
-            loadTrailers( trailerList,movie);
+            mTrailerList= root.findViewById(R.id.movie_detail_trailer_list);
+            mTrailerList.setLayoutManager(new LinearLayoutManager(getContext()));
+            mTrailerList.setAdapter(new MovieTrailerListAdapter());
+            mTrailerList.setHasFixedSize(true);
+            mTrailerList.setNestedScrollingEnabled(false);
 
-            RecyclerView reviewList = root.findViewById(R.id.movie_detail_review_list);
-            reviewList.setLayoutManager(new LinearLayoutManager(getContext()));
-            reviewList.setAdapter(new MovieReviewsListAdapter());
-            reviewList.setHasFixedSize(true);
-            reviewList.setNestedScrollingEnabled(false);
-            loadReviews( reviewList, movie);
+            mReviewList = root.findViewById(R.id.movie_detail_review_list);
+            mReviewList.setLayoutManager(new LinearLayoutManager(getContext()));
+            mReviewList.setAdapter(new MovieReviewsListAdapter());
+            mReviewList.setHasFixedSize(true);
+            mReviewList.setNestedScrollingEnabled(false);
 
             Button favoriteButton = root.findViewById(R.id.movie_detail_add_favorite_btn);
             if(mMovieDbHelper.isMovieMarkedAsFavorite(movie)){
@@ -108,89 +126,59 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    private void loadReviews(final RecyclerView reviewList, Movie movie) {
-        final Context context = reviewList.getContext();
-        if(!ConnectionUtils.isOnline(context)){
-            ConnectionUtils.onConnectionError(context);
-            return;
-        }
-
-        RestEndpointInterface apiService =
-                RestApiClient.getClient().create(RestEndpointInterface.class);
-
-        Call<ReviewResponse> call = apiService.getMovieReviews(movie.getId(), getString(R.string.api_key));
-        call.enqueue(new Callback<ReviewResponse>() {
-
-            @Override
-            public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
-                MovieReviewsListAdapter adapter = (MovieReviewsListAdapter) reviewList.getAdapter();
-                adapter.setData(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<ReviewResponse> call, Throwable t) {
-
-                t.printStackTrace();
-                Toast.makeText(getContext(),getString(R.string.error_detail), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
-    private void loadTrailers(final RecyclerView trailerList, Movie movie) {
-        final Context context = trailerList.getContext();
-        if(!ConnectionUtils.isOnline(context)){
-            ConnectionUtils.onConnectionError(context);
-            return;
-        }
-
-        RestEndpointInterface apiService =
-                RestApiClient.getClient().create(RestEndpointInterface.class);
-
-        Call<TrailerResponse> call = apiService.getMovieTrailers(movie.getId(), getString(R.string.api_key));
-        call.enqueue(new Callback<TrailerResponse>() {
-
-            @Override
-            public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
-                MovieTrailerListAdapter adapter = (MovieTrailerListAdapter) trailerList.getAdapter();
-                adapter.setData(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<TrailerResponse> call, Throwable t) {
-                t.printStackTrace();
-                Toast.makeText(getContext(),getString(R.string.error_detail), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
     @Override
     public void onClick(View view) {
-
         if(view.getId() == R.id.movie_detail_add_favorite_btn){
 
-            Button b = (Button) view;
-            if(b.getText().equals(getString(R.string.mark_as_favorite))){
-                getContext().getContentResolver().insert(MovieEntry.CONTENT_URI, ProviderUtils.getContentValues(mMovie));
-                b.setText(getString(R.string.remove_from_favorites));
+            Button button = (Button) view;
+            if(button.getText().equals(getString(R.string.mark_as_favorite))){
+                mPresenter.insertFavorite(mMovie);
+                button.setText(getString(R.string.remove_from_favorites));
                 Toast.makeText(getContext(),getString(R.string.marked_as_favorite), Toast.LENGTH_SHORT).show();
             }
             else{
-                String selection = MovieEntry.COLUMN_NAME_MOVIE_ID+"=?";
-                String[] selectionArgs = {String.valueOf(mMovie.getId())};
-                getContext().getContentResolver().delete(MovieEntry.CONTENT_URI,selection, selectionArgs);
-                b.setText(getString(R.string.mark_as_favorite));
+                mPresenter.deleteFromFavorites(mMovie);
+                button.setText(getString(R.string.mark_as_favorite));
                 Toast.makeText(getContext(),getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    public long getMovieId(){
-        try {
-            return mMovie.getId();
-        }
-        catch(Exception e){
-            return INVALID_MOVIE_ID;
-        }
+    public Movie getMovie(){
+        return mMovie;
+    }
+
+    @Override
+    public void setPresenter(MovieDetailContract.Presenter presenter) {
+        Log.d(TAG, "setPresenter");
+        mPresenter = presenter;
+    }
+
+    @Override
+    public void populateTrailers(List<Trailer> trailers) {
+        MovieTrailerListAdapter adapter = (MovieTrailerListAdapter) mTrailerList.getAdapter();
+        adapter.setData(trailers);
+    }
+
+    @Override
+    public void popularReviews(List<Review> reviews) {
+        MovieReviewsListAdapter adapter = (MovieReviewsListAdapter) mReviewList.getAdapter();
+        adapter.setData(reviews);
+    }
+
+    @Override
+    public void showErrorMessage() {
+        Toast.makeText(getContext(),getString(R.string.error_detail), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showConnectionErrorMessage() {
+        ConnectionUtils.onConnectionError(getContext());
+    }
+
+    @Override
+    public boolean isNetworkConnected() {
+        return ConnectionUtils.isOnline(getContext());
     }
 }

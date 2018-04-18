@@ -18,10 +18,12 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.reshmi.james.popularmovies.Injector;
 import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.network.model.Movie;
 import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailActivity;
 import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailFragment;
+import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailPresenter;
 import com.reshmi.james.popularmovies.util.ConnectionUtils;
 
 import java.util.List;
@@ -31,7 +33,6 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
     private static final String TAG = "PopularMoviesFragment";
     private static final String SCROLL_POSITION = "scroll_position";
     private RecyclerView mRecyclerView;
-    private boolean mDualPane;
     private List<Movie> mMovies;
     private int mCurrentChoice = 0;
     private ProgressBar mLoadingIndicator;
@@ -52,9 +53,6 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //Check if we are in dual pane mode
-        View detailsFrame = getActivity().findViewById(R.id.pop_movies_detail_view_container);
-        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
 
         if(savedInstanceState!=null){
             mCurrentChoice = savedInstanceState.getInt(SCROLL_POSITION);
@@ -135,36 +133,17 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
         try {
             Movie movie = mMovies.get(position);
             mCurrentChoice = position;
-            if(mDualPane){
-                populateMovieDetails(movie);
-            }
-            else{
-                //Not dual pane, open the movie detail activity
-                Context context = getContext();
-                Intent intent = new Intent(context, MovieDetailActivity.class);
-                intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
-                context.startActivity(intent);
-            }
+
+            //Not dual pane, open the movie detail activity
+            Context context = getContext();
+            Intent intent = new Intent(context, MovieDetailActivity.class);
+            intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
+            context.startActivity(intent);
+
         }
         catch(Exception e){
             Log.e(TAG,"Error loading movie details");
             e.printStackTrace();
-        }
-    }
-
-    private void populateMovieDetails(Movie movie){
-        // Check what fragment is currently shown, replace if needed.
-        MovieDetailFragment details = (MovieDetailFragment)
-                getFragmentManager().findFragmentById(R.id.pop_movies_detail_view_container);
-
-        if (details == null || details.getMovieId() != movie.getId()) {
-            // Make new fragment to show this selection.
-            details = MovieDetailFragment.newInstance(movie);
-
-            //Replace fragment with new one
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.pop_movies_detail_view_container,details);
-            ft.commit();
         }
     }
 
@@ -186,10 +165,6 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
         PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
         adapter.setData(mMovies);
         mRecyclerView.smoothScrollToPosition(mCurrentChoice);
-
-        if(mDualPane){
-            populateMovieDetails(movies.get(mCurrentChoice));
-        }
     }
 
     @Override

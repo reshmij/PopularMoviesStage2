@@ -12,15 +12,16 @@ import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.network.model.Review;
 import com.reshmi.james.popularmovies.data.network.model.ReviewResponse;
 
+import java.util.List;
+
 public class MovieReviewsListAdapter extends RecyclerView.Adapter<MovieReviewsListAdapter.MovieReviewViewHolder> {
 
-    ReviewResponse mReviewResponse;
+    List<Review> mReviews;
     Context mContext;
 
     @NonNull
     @Override
     public MovieReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         mContext = parent.getContext();
         View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.reviews_list_item,parent, false);
         return new MovieReviewViewHolder(root);
@@ -28,9 +29,8 @@ public class MovieReviewsListAdapter extends RecyclerView.Adapter<MovieReviewsLi
 
     @Override
     public void onBindViewHolder(@NonNull MovieReviewViewHolder holder, int position) {
-
         try {
-            Review review = mReviewResponse.getResults()[position];
+            Review review = mReviews.get(position);
             holder.mReviewAuthor.setText(mContext.getString(R.string.author,review.getAuthor()));
             holder.mReviewContent.setText(review.getContent());
         }
@@ -41,22 +41,18 @@ public class MovieReviewsListAdapter extends RecyclerView.Adapter<MovieReviewsLi
 
     @Override
     public int getItemCount() {
-
-        if(mReviewResponse!=null) {
-            return mReviewResponse.getResults().length;
+        if(mReviews!=null) {
+            return mReviews.size();
         }
         return 0;
     }
 
-    public void setData(ReviewResponse reviewResponse){
-
-        mReviewResponse = reviewResponse;
+    public void setData(List<Review> reviews){
+        mReviews = reviews;
         notifyDataSetChanged();
     }
 
-
     public static class MovieReviewViewHolder extends RecyclerView.ViewHolder{
-
         final TextView mReviewAuthor;
         final TextView mReviewContent;
 

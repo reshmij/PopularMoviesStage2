@@ -15,9 +15,12 @@ import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.network.model.Trailer;
 import com.reshmi.james.popularmovies.data.network.model.TrailerResponse;
 
+import java.util.List;
+
 public class MovieTrailerListAdapter extends RecyclerView.Adapter<MovieTrailerListAdapter.MovieTrailerViewHolder> implements View.OnClickListener{
 
-    TrailerResponse mTrailerResponse;
+    List<Trailer> mTrailers;
+
     @NonNull
     @Override
     public MovieTrailerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -28,15 +31,12 @@ public class MovieTrailerListAdapter extends RecyclerView.Adapter<MovieTrailerLi
 
     @Override
     public void onBindViewHolder(@NonNull MovieTrailerViewHolder holder, int position) {
-
         try {
-
-            Trailer trailer = mTrailerResponse.getTrailers()[position];
+            Trailer trailer = mTrailers.get(position);
             holder.mView.setTag(trailer);
             holder.mView.setOnClickListener(this);
 
             holder.mTrailerName.setText(trailer.getName());
-
         }
         catch(Exception e){
             e.printStackTrace();
@@ -45,22 +45,19 @@ public class MovieTrailerListAdapter extends RecyclerView.Adapter<MovieTrailerLi
 
     @Override
     public int getItemCount() {
-
-        if(mTrailerResponse!=null) {
-            return mTrailerResponse.getTrailers().length;
+        if(mTrailers!=null) {
+            return mTrailers.size();
         }
         return 0;
     }
 
-    public void setData(TrailerResponse trailerResponse){
-
-        mTrailerResponse = trailerResponse;
+    public void setData(List<Trailer> trailers){
+        mTrailers = trailers;
         notifyDataSetChanged();
     }
 
     @Override
     public void onClick(View view) {
-
         Trailer trailer = (Trailer)view.getTag();
         Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + trailer.getKey()));
         Intent webIntent = new Intent(Intent.ACTION_VIEW,
@@ -71,7 +68,6 @@ public class MovieTrailerListAdapter extends RecyclerView.Adapter<MovieTrailerLi
         } catch (ActivityNotFoundException ex) {
             context.startActivity(webIntent);
         }
-
     }
 
     public static class MovieTrailerViewHolder extends RecyclerView.ViewHolder{
@@ -84,7 +80,6 @@ public class MovieTrailerListAdapter extends RecyclerView.Adapter<MovieTrailerLi
             super(view);
             mView = view;
             mTrailerName = view.findViewById(R.id.trailer_name);
-
         }
     }
 }
