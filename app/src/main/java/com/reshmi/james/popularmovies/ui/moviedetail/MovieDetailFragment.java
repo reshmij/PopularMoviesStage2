@@ -95,7 +95,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
             TextView userRating = root.findViewById(R.id.movie_detail_user_rating);
             ImageView thumbnail = root.findViewById(R.id.movie_detail_thumbnail);
 
-            title.setText(movie.getOriginalTitle());
+            title.setText(movie.getTitle());
             releaseDate.setText(movie.getReleaseDate());
             synopsis.setText(movie.getOverview());
             userRating.setText(FormatUtils.formatRatingString(movie.getVoteAverage()));

@@ -96,7 +96,12 @@ public class PopularMoviesPresenter implements  PopularMoviesContract.Presenter,
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         List<Movie> movies = ProviderUtils.parseMovieResponse(data);
-        mMoviesView.showMovies(movies);
+        if(movies!=null && movies.size()>0) {
+            mMoviesView.showMovies(movies);
+        }
+        else{
+            mMoviesView.showErrorMessage();
+        }
     }
 
     @Override

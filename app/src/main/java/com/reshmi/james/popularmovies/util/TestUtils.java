@@ -47,17 +47,11 @@ public final class TestUtils {
         // Create a new map of values, where column names are the keys
         ContentValues cv = new ContentValues();
         cv.put(MovieEntry.COLUMN_NAME_VOTE_AVERAGE, 6.2);
-        cv.put(MovieEntry.COLUMN_NAME_BACKDROP_PATH, "/9ywA15OAiwjSTvg3cBs9B7kOCBF.jpg");
-        cv.put(MovieEntry.COLUMN_NAME_ADULT, 0);
         cv.put(MovieEntry.COLUMN_NAME_MOVIE_ID, 337167);
         cv.put(MovieEntry.COLUMN_NAME_TITLE, "Fifty Shades Freed");
         cv.put(MovieEntry.COLUMN_NAME_OVERVIEW, "Believing they have left behind shadowy figures from their past, newlyweds Christian and Ana fully embrace an inextricable connection and shared life of luxury. But just as she steps into her role as Mrs. Grey and he relaxes into an unfamiliar stability, new threats could jeopardize their happy ending before it even begins.");
         cv.put(MovieEntry.COLUMN_NAME_RELEASE_DATE, "2018-02-07");
-        cv.put(MovieEntry.COLUMN_NAME_ORIGINAL_TITLE, "Fifty Shades Freed");
-        cv.put(MovieEntry.COLUMN_NAME_VOTE_COUNT, 1020);
         cv.put(MovieEntry.COLUMN_NAME_POSTER_PATH, "/jjPJ4s3DWZZvI4vw8Xfi4Vqa1Q8.jpg");
-        cv.put(MovieEntry.COLUMN_NAME_VIDEO, 0);
-        cv.put(MovieEntry.COLUMN_NAME_POPULARITY, 587.469069);
         long rowId = db.insert(MovieDbContract.MovieEntry.TABLE_NAME, null, cv);
 
 
@@ -69,9 +63,7 @@ public final class TestUtils {
                 BaseColumns._ID,
                 MovieEntry.COLUMN_NAME_TITLE,
                 MovieEntry.COLUMN_NAME_POSTER_PATH,
-                MovieEntry.COLUMN_NAME_ORIGINAL_TITLE,
                 MovieEntry.COLUMN_NAME_VOTE_AVERAGE
-
         };
 
         // How you want the results sorted in the resulting Cursor
