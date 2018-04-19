@@ -13,7 +13,8 @@ public interface MovieDetailContract {
         void setPresenter(Presenter presenter);
         void populateTrailers(List<Trailer> trailers);
         void popularReviews(List<Review> reviews);
-        void showErrorMessage();
+        void showNoTrailersMessage();
+        void showNoReviewsMessage();
         void showConnectionErrorMessage();
         boolean isNetworkConnected();
 

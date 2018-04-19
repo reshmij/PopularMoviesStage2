@@ -111,7 +111,7 @@ public class MovieContentProvider extends ContentProvider {
 
 
         getContext().getContentResolver().notifyChange(uri, null);
-
+        db.close();
         return returnUri;
     }
 
@@ -135,6 +135,7 @@ public class MovieContentProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
+        db.close();
         if(count!=0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }

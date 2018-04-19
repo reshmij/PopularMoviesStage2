@@ -58,11 +58,12 @@ public class MovieTrailerListAdapter extends RecyclerView.Adapter<MovieTrailerLi
 
     @Override
     public void onClick(View view) {
+        Context context = view.getContext();
         Trailer trailer = (Trailer)view.getTag();
         Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + trailer.getKey()));
         Intent webIntent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("http://www.youtube.com/watch?v=" + trailer.getKey()));
-        Context context = view.getContext();
+                Uri.parse(context.getString(R.string.youtube_url_prefix) + trailer.getKey()));
+
         try {
             context.startActivity(appIntent);
         } catch (ActivityNotFoundException ex) {

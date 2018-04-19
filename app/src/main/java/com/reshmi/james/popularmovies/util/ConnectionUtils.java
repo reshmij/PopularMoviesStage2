@@ -8,6 +8,8 @@ import com.reshmi.james.popularmovies.R;
 
 public final class ConnectionUtils {
 
+    static Toast mToast;
+
     private ConnectionUtils(){}
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -20,7 +22,9 @@ public final class ConnectionUtils {
     }
 
     public static void onConnectionError(Context context){
-        Toast.makeText( context, R.string.connection_error, Toast.LENGTH_LONG).show();
+        if(mToast != null){ mToast.cancel();}
+        mToast =  Toast.makeText( context, R.string.connection_error, Toast.LENGTH_LONG);
+        mToast.show();
     }
 
 }

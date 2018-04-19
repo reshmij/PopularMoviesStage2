@@ -2,15 +2,23 @@ package com.reshmi.james.popularmovies.ui.moviedetail;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
+import android.view.ActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -43,11 +51,12 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
     private static final String TAG = "MovieDetailFragment";
     public static final String MOVIE_DETAIL = "movie_detail";
-    MovieDbHelper mMovieDbHelper;
-    Movie mMovie;
-    MovieDetailContract.Presenter mPresenter;
-    RecyclerView mTrailerList;
-    RecyclerView mReviewList;
+    private MovieDbHelper mMovieDbHelper;
+    private Movie mMovie;
+    private MovieDetailContract.Presenter mPresenter;
+    private RecyclerView mTrailerList;
+    private RecyclerView mReviewList;
+    private ShareActionProvider mShareActionProvider;
 
     public static MovieDetailFragment newInstance(Movie movie) {
         MovieDetailFragment f = new MovieDetailFragment();
@@ -57,6 +66,12 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         f.setArguments(args);
 
         return f;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -70,8 +85,15 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         Bundle args = getArguments();
         mMovie = args != null ? (Movie) args.getParcelable(MOVIE_DETAIL) : null;
         populateUI(root,mMovie);
-
         return root;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.movies_details_menu, menu);
+        MenuItem shareItem = menu.findItem(R.id.action_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        return;
     }
 
     @Override
@@ -159,6 +181,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     public void populateTrailers(List<Trailer> trailers) {
         MovieTrailerListAdapter adapter = (MovieTrailerListAdapter) mTrailerList.getAdapter();
         adapter.setData(trailers);
+        setShareIntent(trailers.get(0));
     }
 
     @Override
@@ -168,17 +191,42 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void showErrorMessage() {
-        Toast.makeText(getContext(),getString(R.string.error_detail), Toast.LENGTH_SHORT).show();
+    public void showNoTrailersMessage() {
+        setEmptyShareIntent();
+    }
+
+    @Override
+    public void showNoReviewsMessage() {
+
     }
 
     @Override
     public void showConnectionErrorMessage() {
         ConnectionUtils.onConnectionError(getContext());
+        setEmptyShareIntent();
     }
 
     @Override
     public boolean isNetworkConnected() {
         return ConnectionUtils.isOnline(getContext());
+    }
+
+    private void setShareIntent(Trailer firstTrailer){
+
+        //Share the first trailer’s YouTube URL
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT,firstTrailer.getName());
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.youtube_url_prefix) + firstTrailer.getKey());
+        mShareActionProvider.setShareIntent(shareIntent);
+    }
+
+    private void setEmptyShareIntent(){
+        try {
+            mShareActionProvider.setShareIntent(null);
+        }
+        catch(Exception e){
+
+        }
     }
 }

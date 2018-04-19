@@ -18,7 +18,6 @@ public class MovieDetailPresenter implements MovieDetailContract.Presenter{
     MovieDetailContract.View mMovieDetailView;
     MoviesRepository mMoviesRepository;
 
-
     public MovieDetailPresenter( @NonNull MovieDetailContract.View movieDetailView, @NonNull MoviesRepository moviesRepository) {
         Log.d(TAG, "MovieDetailPresenter created");
 
@@ -42,7 +41,7 @@ public class MovieDetailPresenter implements MovieDetailContract.Presenter{
 
                 @Override
                 public void onDataNotAvailable() {
-                    mMovieDetailView.showErrorMessage();
+                    mMovieDetailView.showNoTrailersMessage();
                 }
             });
         }
@@ -62,7 +61,7 @@ public class MovieDetailPresenter implements MovieDetailContract.Presenter{
 
                 @Override
                 public void onDataNotAvailable() {
-                    mMovieDetailView.showErrorMessage();
+                    mMovieDetailView.showNoReviewsMessage();
                 }
             });
         }
