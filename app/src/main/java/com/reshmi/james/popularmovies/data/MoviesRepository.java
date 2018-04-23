@@ -22,9 +22,9 @@ public class MoviesRepository implements MoviesDataSource {
 
     private static final String TAG="MoviesRepository";
     private static MoviesRepository sInstance;
-    RestEndpointInterface mApiService;
-    ContentResolver mContentResolver;
-    String mApiKey;
+    private final RestEndpointInterface mApiService;
+    private final ContentResolver mContentResolver;
+    private final String mApiKey;
 
     public static MoviesRepository getInstance(RestEndpointInterface apiService, ContentResolver contentResolver, String apiKey){
         if(sInstance == null){
@@ -46,6 +46,7 @@ public class MoviesRepository implements MoviesDataSource {
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
                 try{
+                    //noinspection ConstantConditions
                     callback.onMoviesLoaded(Arrays.asList(response.body().getResults()));
                 }
                 catch (Exception e){
@@ -68,6 +69,7 @@ public class MoviesRepository implements MoviesDataSource {
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
                 try{
+                    //noinspection ConstantConditions
                     callback.onMoviesLoaded(Arrays.asList(response.body().getResults()));
                 }
                 catch (Exception e){
@@ -100,6 +102,7 @@ public class MoviesRepository implements MoviesDataSource {
             @Override
             public void onResponse(@NonNull Call<TrailerResponse> call, @NonNull Response<TrailerResponse> response) {
                 try{
+                    //noinspection ConstantConditions
                     callback.onTrailersLoaded(Arrays.asList(response.body().getTrailers()));
                 }
                 catch (Exception e){
@@ -123,6 +126,7 @@ public class MoviesRepository implements MoviesDataSource {
             @Override
             public void onResponse(@NonNull Call<ReviewResponse> call, @NonNull Response<ReviewResponse> response) {
                 try{
+                    //noinspection ConstantConditions
                     callback.onReviewsLoaded(Arrays.asList(response.body().getResults()));
                 }
                 catch (Exception e){

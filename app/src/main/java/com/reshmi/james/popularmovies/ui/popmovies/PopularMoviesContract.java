@@ -6,7 +6,7 @@ import com.reshmi.james.popularmovies.ui.BaseView;
 
 import java.util.List;
 
-public interface PopularMoviesContract {
+interface PopularMoviesContract {
 
     interface View extends BaseView<Presenter>{
 
@@ -19,8 +19,6 @@ public interface PopularMoviesContract {
         boolean isNetworkConnected();
 
         void showConnectionErrorMessage();
-
-        String getApiKey();
 
     }
 

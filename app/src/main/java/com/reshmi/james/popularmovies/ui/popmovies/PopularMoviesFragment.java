@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,12 +17,9 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.reshmi.james.popularmovies.Injector;
 import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.network.model.Movie;
 import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailActivity;
-import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailFragment;
-import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailPresenter;
 import com.reshmi.james.popularmovies.util.ConnectionUtils;
 
 import java.util.List;
@@ -128,7 +124,7 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
     }
 
     @Override
-    public void onListItemClick(View view, int position) {
+    public void onListItemClick(int position) {
 
         try {
             Movie movie = mMovies.get(position);
@@ -138,6 +134,7 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
             Context context = getContext();
             Intent intent = new Intent(context, MovieDetailActivity.class);
             intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
+            //noinspection ConstantConditions
             context.startActivity(intent);
 
         }
@@ -182,11 +179,6 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
     @Override
     public void showConnectionErrorMessage() {
         ConnectionUtils.onConnectionError(getContext());
-    }
-
-    @Override
-    public String getApiKey() {
-        return getString(R.string.api_key);
     }
 
     @Override

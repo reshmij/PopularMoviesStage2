@@ -1,7 +1,6 @@
 package com.reshmi.james.popularmovies.ui.popmovies;
 
 import android.content.Intent;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,11 +17,12 @@ public class PopularMoviesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_pop_movies);
 
         LoaderProvider loaderProvider = new LoaderProvider(this);
         PopularMoviesFragment popularMoviesFragment = (PopularMoviesFragment)getSupportFragmentManager().findFragmentById(R.id.pop_movies_fragment);
-        PopularMoviesPresenter popularMoviesPresenter = new PopularMoviesPresenter(popularMoviesFragment,
+
+        new PopularMoviesPresenter(popularMoviesFragment,
                 Injector.getMoviesRepository(getApplicationContext()),
                 loaderProvider,
                 getSupportLoaderManager());

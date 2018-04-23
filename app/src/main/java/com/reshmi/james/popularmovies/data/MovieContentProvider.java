@@ -16,12 +16,12 @@ import com.reshmi.james.popularmovies.data.database.MovieDbHelper;
 
 public class MovieContentProvider extends ContentProvider {
 
-    public static final int MOVIES=100;
-    public static final int MOVIE_WITH_ID=101;
+    private static final int MOVIES=100;
+    private static final int MOVIE_WITH_ID=101;
 
-    public static UriMatcher sUriMatcher = buildUriMatcher();
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
 
-    public static UriMatcher buildUriMatcher() {
+    private static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(MovieDbContract.AUTHORITY, MovieDbContract.PATH_MOVIES, MOVIES);
         uriMatcher.addURI(MovieDbContract.AUTHORITY, MovieDbContract.PATH_MOVIES+"/#", MOVIE_WITH_ID);
@@ -34,7 +34,7 @@ public class MovieContentProvider extends ContentProvider {
     public boolean onCreate() {
         mDbHelper = new MovieDbHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        return (db == null)? false:true;
+        return db != null;
     }
 
     @Override
@@ -110,6 +110,7 @@ public class MovieContentProvider extends ContentProvider {
         }
 
 
+        //noinspection ConstantConditions
         getContext().getContentResolver().notifyChange(uri, null);
         db.close();
         return returnUri;
@@ -117,7 +118,7 @@ public class MovieContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int count = 0;
+        int count;
         final SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         switch (sUriMatcher.match(uri)){
@@ -137,6 +138,7 @@ public class MovieContentProvider extends ContentProvider {
 
         db.close();
         if(count!=0) {
+            //noinspection ConstantConditions
             getContext().getContentResolver().notifyChange(uri, null);
         }
         return count;
@@ -144,7 +146,7 @@ public class MovieContentProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int count = 0;
+        int count;
         final SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         switch (sUriMatcher.match(uri)){
@@ -161,6 +163,7 @@ public class MovieContentProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
+        //noinspection ConstantConditions
         getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }

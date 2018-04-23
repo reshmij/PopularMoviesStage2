@@ -11,8 +11,8 @@ import com.reshmi.james.popularmovies.data.network.model.Movie;
 
 public class MovieDbHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 3;
-    public static final String DATABASE_NAME = "FavoriteMovies.db";
+    private static final int DATABASE_VERSION = 3;
+    private static final String DATABASE_NAME = "FavoriteMovies.db";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
@@ -50,6 +50,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         String selection = MovieEntry.COLUMN_NAME_MOVIE_ID + " = ?";
         String[] selectionArgs = { String.valueOf(movie.getId()) };
         Cursor cursor = db.query(MovieEntry.TABLE_NAME, projection,selection,selectionArgs,null,null,null);
-        return (cursor.getCount()>0);
+        int  count = cursor.getCount();
+        cursor.close();
+        return (count>0);
     }
 }

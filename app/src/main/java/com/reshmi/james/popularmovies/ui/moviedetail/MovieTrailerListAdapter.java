@@ -13,13 +13,12 @@ import android.widget.TextView;
 
 import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.network.model.Trailer;
-import com.reshmi.james.popularmovies.data.network.model.TrailerResponse;
 
 import java.util.List;
 
 public class MovieTrailerListAdapter extends RecyclerView.Adapter<MovieTrailerListAdapter.MovieTrailerViewHolder> implements View.OnClickListener{
 
-    List<Trailer> mTrailers;
+    private List<Trailer> mTrailers;
 
     @NonNull
     @Override

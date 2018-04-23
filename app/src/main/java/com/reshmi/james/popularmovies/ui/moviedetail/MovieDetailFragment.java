@@ -1,9 +1,7 @@
 package com.reshmi.james.popularmovies.ui.moviedetail;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
-import android.view.ActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,30 +24,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.reshmi.james.popularmovies.R;
-import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
 import com.reshmi.james.popularmovies.data.database.MovieDbHelper;
 import com.reshmi.james.popularmovies.data.network.model.Movie;
 import com.reshmi.james.popularmovies.data.network.model.Review;
-import com.reshmi.james.popularmovies.data.network.model.ReviewResponse;
 import com.reshmi.james.popularmovies.data.network.model.Trailer;
-import com.reshmi.james.popularmovies.data.network.model.TrailerResponse;
 import com.reshmi.james.popularmovies.util.ConnectionUtils;
-import com.reshmi.james.popularmovies.util.ProviderUtils;
-import com.reshmi.james.popularmovies.data.network.RestApiClient;
-import com.reshmi.james.popularmovies.data.network.RestEndpointInterface;
 import com.reshmi.james.popularmovies.util.FormatUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class MovieDetailFragment extends Fragment implements View.OnClickListener, MovieDetailContract.View {
 
     private static final String TAG = "MovieDetailFragment";
-    public static final String MOVIE_DETAIL = "movie_detail";
+    private static final String MOVIE_DETAIL = "movie_detail";
     private MovieDbHelper mMovieDbHelper;
     private Movie mMovie;
     private MovieDetailContract.Presenter mPresenter;
@@ -93,7 +80,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         inflater.inflate(R.menu.movies_details_menu, menu);
         MenuItem shareItem = menu.findItem(R.id.action_share);
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
-        return;
     }
 
     @Override
@@ -167,10 +153,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    public Movie getMovie(){
-        return mMovie;
-    }
-
     @Override
     public void setPresenter(MovieDetailContract.Presenter presenter) {
         Log.d(TAG, "setPresenter");
@@ -197,7 +179,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void showNoReviewsMessage() {
-
+        Log.e(TAG, "No reviews available");
     }
 
     @Override
@@ -226,7 +208,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
             mShareActionProvider.setShareIntent(null);
         }
         catch(Exception e){
-
+            Log.e(TAG, e.getMessage());
         }
     }
 }

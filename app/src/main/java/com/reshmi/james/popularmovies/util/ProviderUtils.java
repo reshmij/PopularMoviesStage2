@@ -19,7 +19,7 @@ public final class ProviderUtils {
 
         int size = cursor.getCount();
         if(size!=0) {
-            List<Movie> movies = new ArrayList<Movie>();
+            List<Movie> movies = new ArrayList<>();
             cursor.moveToFirst();
             for (int i = 0; i < size; i++) {
 

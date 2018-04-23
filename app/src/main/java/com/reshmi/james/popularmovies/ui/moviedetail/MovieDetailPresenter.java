@@ -14,9 +14,9 @@ import java.util.List;
 
 public class MovieDetailPresenter implements MovieDetailContract.Presenter{
 
-    private static String TAG = "MovieDetailPresenter";
-    MovieDetailContract.View mMovieDetailView;
-    MoviesRepository mMoviesRepository;
+    private static final String TAG = "MovieDetailPresenter";
+    private final MovieDetailContract.View mMovieDetailView;
+    private final MoviesRepository mMoviesRepository;
 
     public MovieDetailPresenter( @NonNull MovieDetailContract.View movieDetailView, @NonNull MoviesRepository moviesRepository) {
         Log.d(TAG, "MovieDetailPresenter created");
@@ -28,6 +28,7 @@ public class MovieDetailPresenter implements MovieDetailContract.Presenter{
 
     @Override
     public void start() {
+        Log.d(TAG, "MovieDetailPresenter start");
     }
 
     @Override

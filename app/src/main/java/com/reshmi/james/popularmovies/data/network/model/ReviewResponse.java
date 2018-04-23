@@ -2,18 +2,15 @@ package com.reshmi.james.popularmovies.data.network.model;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by reshmijames on 3/21/18.
- */
-
+@SuppressWarnings({"CanBeFinal", "unused"})
 public class ReviewResponse {
 
     @SerializedName("id")
-    long id;
+    private long id;
     @SerializedName("page")
-    int page;
+    private int page;
     @SerializedName("results")
-    Review[] results;
+    private Review[] results;
 
     public ReviewResponse(long id, int page, Review[] results) {
         this.id = id;

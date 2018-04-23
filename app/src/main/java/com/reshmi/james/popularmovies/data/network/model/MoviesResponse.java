@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
 
+@SuppressWarnings({"CanBeFinal", "unused"})
 public class MoviesResponse {
 
     @SerializedName("results")
@@ -16,42 +17,11 @@ public class MoviesResponse {
     @SerializedName("total_results")
     private String totalResults;
 
-    public MoviesResponse() {
-    }
-
     public MoviesResponse(Movie[] results) {
         this.results = results;
     }
     public Movie[] getResults() {
         return results;
-    }
-
-    public void setResults(Movie[] results) {
-        this.results = results;
-    }
-
-    public String getPage() {
-        return page;
-    }
-
-    public void setPage(String page) {
-        this.page = page;
-    }
-
-    public String getTotalPages() {
-        return totalPages;
-    }
-
-    public void setTotalPages(String totalPages) {
-        this.totalPages = totalPages;
-    }
-
-    public String getTotalResults() {
-        return totalResults;
-    }
-
-    public void setTotalResults(String totalResults) {
-        this.totalResults = totalResults;
     }
 
     @Override

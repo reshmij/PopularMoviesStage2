@@ -8,6 +8,7 @@ import com.reshmi.james.popularmovies.data.network.model.Trailer;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public interface MoviesDataSource {
 
     interface GetMoviesCallback{

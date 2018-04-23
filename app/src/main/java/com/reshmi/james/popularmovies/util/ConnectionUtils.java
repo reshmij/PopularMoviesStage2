@@ -8,7 +8,7 @@ import com.reshmi.james.popularmovies.R;
 
 public final class ConnectionUtils {
 
-    static Toast mToast;
+    private static Toast mToast;
 
     private ConnectionUtils(){}
 

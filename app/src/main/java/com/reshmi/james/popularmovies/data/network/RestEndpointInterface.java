@@ -18,9 +18,6 @@ public interface RestEndpointInterface {
     @GET("movie/top_rated")
     Call<MoviesResponse> getTopRatedMovies(@Query("api_key") String apiKey);
 
-    @GET("movie/{movie_id}")
-    Call<MoviesResponse> getMovieDetails(@Path("movie_id") String movieId);
-
     @GET("movie/{id}/videos")
     Call<TrailerResponse> getMovieTrailers(@Path("id") long id, @Query("api_key") String apiKey);
 

@@ -18,12 +18,12 @@ import java.util.List;
 public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMoviesGridAdapter.PopularMoviesViewHolder> {
 
     public interface ListItemClickListener{
-        public void onListItemClick(View view, int position);
+        void onListItemClick(int position);
     }
 
     private static final String TAG = "PopMoviesGridAdapter";
     private List<Movie> movies;
-    public static ListItemClickListener sListener;
+    private static ListItemClickListener sListener;
 
     public PopularMoviesGridAdapter(ListItemClickListener listener){
         try {
@@ -86,7 +86,7 @@ public class PopularMoviesGridAdapter extends RecyclerView.Adapter<PopularMovies
         public void onClick(View view) {
 
             try {
-                sListener.onListItemClick(view, this.getAdapterPosition());
+                sListener.onListItemClick(this.getAdapterPosition());
             }
             catch (Exception e){
                 e.printStackTrace();

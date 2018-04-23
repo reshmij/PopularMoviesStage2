@@ -10,14 +10,13 @@ import android.widget.TextView;
 
 import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.network.model.Review;
-import com.reshmi.james.popularmovies.data.network.model.ReviewResponse;
 
 import java.util.List;
 
 public class MovieReviewsListAdapter extends RecyclerView.Adapter<MovieReviewsListAdapter.MovieReviewViewHolder> {
 
-    List<Review> mReviews;
-    Context mContext;
+    private List<Review> mReviews;
+    private Context mContext;
 
     @NonNull
     @Override

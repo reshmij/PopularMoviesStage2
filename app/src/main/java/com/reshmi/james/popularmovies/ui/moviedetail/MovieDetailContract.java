@@ -21,6 +21,7 @@ public interface MovieDetailContract {
     }
 
     interface Presenter{
+        @SuppressWarnings("unused")
         void start();
         void loadReviews(long id);
         void loadTrailers(long id);

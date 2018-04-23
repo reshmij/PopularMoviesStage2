@@ -2,10 +2,7 @@ package com.reshmi.james.popularmovies.data.network.model;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by reshmijames on 3/21/18.
- */
-
+@SuppressWarnings({"unused", "CanBeFinal"})
 public class Review {
 
     @SerializedName("author")

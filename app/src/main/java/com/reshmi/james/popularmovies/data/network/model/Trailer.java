@@ -5,22 +5,23 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings({"CanBeFinal", "unused"})
 public class Trailer implements Parcelable{
 
     @SerializedName("id")
-    String id;
+    private String id;
     @SerializedName("iso_639_1")
-    String iso6391;
+    private String iso6391;
     @SerializedName("iso_3166_1")
-    String iso31661;
+    private String iso31661;
     @SerializedName("key")
-    String key;
+    private String key;
     @SerializedName("name")
-    String name;
+    private String name;
     @SerializedName("size")
-    int size;
+    private int size;
     @SerializedName("type")
-    String type;
+    private String type;
 
     public Trailer(String id, String iso6391, String iso31661, String key, String name, int size, String type) {
         this.id = id;
@@ -60,7 +61,7 @@ public class Trailer implements Parcelable{
         return type;
     }
 
-    protected Trailer(Parcel in) {
+    private Trailer(Parcel in) {
         id = in.readString();
         iso6391 = in.readString();
         iso31661 = in.readString();

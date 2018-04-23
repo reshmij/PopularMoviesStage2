@@ -1,7 +1,6 @@
 package com.reshmi.james.popularmovies.data;
 
 
-import android.app.LoaderManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.content.CursorLoader;

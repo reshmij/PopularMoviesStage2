@@ -19,7 +19,7 @@ import java.util.List;
 import static com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
 
 
-public final class TestUtils {
+final class TestUtils {
 
     private TestUtils(){}
 
@@ -82,19 +82,10 @@ public final class TestUtils {
 
         Toast.makeText(context, "Found " + cursor.getCount() + " item(s) in db", Toast.LENGTH_SHORT).show();
 
-
-        List itemIds = new ArrayList<>();
-        while (cursor.moveToNext()) {
-            long itemId = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(MovieEntry._ID));
-            float voteAverage = cursor.getFloat(cursor.getColumnIndexOrThrow(MovieEntry.COLUMN_NAME_VOTE_AVERAGE));
-            itemIds.add(itemId);
-            Log.d("cursor", "itemId" + itemId + "voteAvg=" + voteAverage);
-        }
-
-
         List<Movie> movies = ProviderUtils.parseMovieResponse(cursor);
-        Log.d("cursor", "Found "+ movies.size() + " movies.");
+        if(movies!=null) {
+            Log.d("cursor", "Found " + movies.size() + " movies.");
+        }
         cursor.close();
     }
 }
