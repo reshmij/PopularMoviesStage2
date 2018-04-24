@@ -1,6 +1,5 @@
 package com.reshmi.james.popularmovies.ui.moviedetail;
 
-import com.reshmi.james.popularmovies.data.network.model.Movie;
 import com.reshmi.james.popularmovies.data.network.model.Review;
 import com.reshmi.james.popularmovies.data.network.model.Trailer;
 import com.reshmi.james.popularmovies.ui.BaseView;
@@ -20,13 +19,14 @@ public interface MovieDetailContract {
         void setFavoriteButtonText( boolean addFavorite);
     }
 
+    @SuppressWarnings("unused")
     interface Presenter{
         @SuppressWarnings("unused")
         void start();
-        void loadReviews(long id);
-        void loadTrailers(long id);
-        void insertFavorite(Movie movie);
-        void deleteFromFavorites(Movie movie);
-        void checkMovieStatusAndConfigureButton(Movie movie);
+        void loadReviews();
+        void loadTrailers();
+        void insertFavorite();
+        void deleteFromFavorites();
+        void checkMovieStatusAndConfigureButton();
     }
 }

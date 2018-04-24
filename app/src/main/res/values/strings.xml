@@ -28,9 +28,8 @@
     <string name="trailers">Trailers</string>
     <string name="author">Written by %s</string>
     <string name="mark_as_favorite">Mark as \nfavorite</string>
-    <string name="remove_from_favorites">Remove from \nfavorites</string>
+    <string name="remove_from_favorites">Remove \nfrom \nfavorites</string>
     <string name="no_data">No data available</string>
     <string name="play_trailer_button">Play trailer button</string>
-
 
 </resources>

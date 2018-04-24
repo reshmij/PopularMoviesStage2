@@ -30,6 +30,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         ft.replace(R.id.movie_detail_fragment_container, movieDetailFragment);
         ft.commit();
 
-        new MovieDetailPresenter(movieDetailFragment, Injector.getMoviesRepository(getApplicationContext()));
+        new MovieDetailPresenter(movie, movieDetailFragment, Injector.getMoviesRepository(getApplicationContext()));
     }
 }

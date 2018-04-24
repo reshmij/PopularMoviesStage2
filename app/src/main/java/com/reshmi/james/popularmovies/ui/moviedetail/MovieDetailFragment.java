@@ -37,7 +37,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
     private static final String TAG = "MovieDetailFragment";
     private static final String MOVIE_DETAIL = "movie_detail";
-    private Movie mMovie;
     private MovieDetailContract.Presenter mPresenter;
     private RecyclerView mTrailerList;
     private RecyclerView mReviewList;
@@ -66,10 +65,9 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         View root = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
         Log.d(TAG, "onCreateView");
-
         Bundle args = getArguments();
-        mMovie = args != null ? (Movie) args.getParcelable(MOVIE_DETAIL) : null;
-        populateUI(root,mMovie);
+        Movie movie = args != null ? (Movie) args.getParcelable(MOVIE_DETAIL) : null;
+        populateUI(root,movie);
         return root;
     }
 
@@ -84,12 +82,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        loadDetails();
-    }
-
-    private void loadDetails() {
-        mPresenter.loadTrailers(mMovie.getId());
-        mPresenter.loadReviews(mMovie.getId());
+        mPresenter.start();
     }
 
     private void populateUI(View root, Movie movie){
@@ -122,8 +115,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
             mReviewList.setNestedScrollingEnabled(false);
 
             mFavoriteButton = root.findViewById(R.id.movie_detail_add_favorite_btn);
-            //Set the content of this button based on whether it is already marked as favorite
-            mPresenter.checkMovieStatusAndConfigureButton(mMovie);
             mFavoriteButton.setOnClickListener(this);
         }
     }
@@ -135,11 +126,11 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
             Button button = (Button) view;
             boolean isFavorite = button.getText().equals(getString(R.string.mark_as_favorite));
             if(isFavorite){
-                mPresenter.insertFavorite(mMovie);
+                mPresenter.insertFavorite();
                 Toast.makeText(getContext(),getString(R.string.marked_as_favorite), Toast.LENGTH_SHORT).show();
             }
             else{
-                mPresenter.deleteFromFavorites(mMovie);
+                mPresenter.deleteFromFavorites();
                 Toast.makeText(getContext(),getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
             }
             setFavoriteButtonText(isFavorite);

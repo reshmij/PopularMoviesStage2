@@ -167,6 +167,8 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
     @Override
     public void showErrorMessage() {
         mErrorMessageView.setVisibility(View.VISIBLE);
+        mErrorMessageView.setText(R.string.no_data);
+
         mRecyclerView.setVisibility(View.INVISIBLE);
         mLoadingIndicator.setVisibility(View.INVISIBLE);
     }
@@ -178,7 +180,11 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
 
     @Override
     public void showConnectionErrorMessage() {
-        ConnectionUtils.onConnectionError(getContext());
+        mErrorMessageView.setVisibility(View.VISIBLE);
+        mErrorMessageView.setText(R.string.connection_error);
+
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
     }
 
     @Override

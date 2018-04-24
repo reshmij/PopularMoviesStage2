@@ -17,10 +17,11 @@ public class MovieDetailPresenter implements MovieDetailContract.Presenter{
     private static final String TAG = "MovieDetailPresenter";
     private final MovieDetailContract.View mMovieDetailView;
     private final MoviesRepository mMoviesRepository;
+    private final Movie mMovie;
 
-    public MovieDetailPresenter( @NonNull MovieDetailContract.View movieDetailView, @NonNull MoviesRepository moviesRepository) {
+    public MovieDetailPresenter( @NonNull Movie movie,  @NonNull MovieDetailContract.View movieDetailView, @NonNull MoviesRepository moviesRepository) {
         Log.d(TAG, "MovieDetailPresenter created");
-
+        mMovie= movie;
         mMovieDetailView = movieDetailView;
         mMoviesRepository = moviesRepository;
         mMovieDetailView.setPresenter(this);
@@ -29,12 +30,15 @@ public class MovieDetailPresenter implements MovieDetailContract.Presenter{
     @Override
     public void start() {
         Log.d(TAG, "MovieDetailPresenter start");
+        loadTrailers();
+        loadReviews();
+        checkMovieStatusAndConfigureButton();
     }
 
     @Override
-    public void loadTrailers(long id) {
+    public void loadTrailers() {
         if(mMovieDetailView.isNetworkConnected()) {
-            mMoviesRepository.getTrailers(id, new MoviesDataSource.GetTrailersCallback() {
+            mMoviesRepository.getTrailers(mMovie.getId(), new MoviesDataSource.GetTrailersCallback() {
                 @Override
                 public void onTrailersLoaded(List<Trailer> trailers) {
                     mMovieDetailView.populateTrailers(trailers);
@@ -52,9 +56,9 @@ public class MovieDetailPresenter implements MovieDetailContract.Presenter{
     }
 
     @Override
-    public void loadReviews(long id) {
+    public void loadReviews() {
         if(mMovieDetailView.isNetworkConnected()) {
-            mMoviesRepository.getReviews(id, new MoviesDataSource.GetReviewsCallback() {
+            mMoviesRepository.getReviews(mMovie.getId(), new MoviesDataSource.GetReviewsCallback() {
                 @Override
                 public void onReviewsLoaded(List<Review> reviews) {
                     mMovieDetailView.popularReviews(reviews);
@@ -72,18 +76,18 @@ public class MovieDetailPresenter implements MovieDetailContract.Presenter{
     }
 
     @Override
-    public void insertFavorite(Movie movie) {
-        mMoviesRepository.insertFavoriteMovie(movie);
+    public void insertFavorite() {
+        mMoviesRepository.insertFavoriteMovie(mMovie);
     }
 
     @Override
-    public void deleteFromFavorites(Movie movie) {
-        mMoviesRepository.deleteFavoriteMovie(movie.getId());
+    public void deleteFromFavorites() {
+        mMoviesRepository.deleteFavoriteMovie(mMovie.getId());
     }
 
     @Override
-    public void checkMovieStatusAndConfigureButton(Movie movie) {
-        mMoviesRepository.getMovie(movie.getId(), new MoviesDataSource.MovieStatusCallback() {
+    public void checkMovieStatusAndConfigureButton() {
+        mMoviesRepository.getMovie(mMovie.getId(), new MoviesDataSource.MovieStatusCallback() {
             @Override
             public void onStatusUpdate(Cursor cursor) {
                 //If cursor returns at least one row, then movie is in the database, it was marked as favorite
