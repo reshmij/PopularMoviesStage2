@@ -74,7 +74,7 @@ public class PopularMoviesPresenter implements  PopularMoviesContract.Presenter,
         }
     }
 
-    ///////////// Callbacks from the movie repository ///////////////////////
+    ///////////// Callbacks from the loadPopularMovies() and loadTopRatedMovies() network call ////////////
     @Override
     public void onMoviesLoaded(List<Movie> movies) {
         mMoviesView.showMovies(movies);
@@ -85,7 +85,8 @@ public class PopularMoviesPresenter implements  PopularMoviesContract.Presenter,
         mMoviesView.showErrorMessage();
     }
 
-    ///////////// Loader Callback Methods ////////////////////////////////
+
+    ///////////// Callback Methods from loader to get favorite movies from database ////////////////
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {

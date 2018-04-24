@@ -130,7 +130,6 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
             Movie movie = mMovies.get(position);
             mCurrentChoice = position;
 
-            //Not dual pane, open the movie detail activity
             Context context = getContext();
             Intent intent = new Intent(context, MovieDetailActivity.class);
             intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
