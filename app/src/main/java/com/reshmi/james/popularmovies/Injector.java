@@ -8,6 +8,7 @@ import com.reshmi.james.popularmovies.data.network.RestEndpointInterface;
 
 public final class Injector {
 
+    private static RestEndpointInterface mApiService;
     private Injector(){}
 
     public static MoviesRepository getMoviesRepository(Context context){
@@ -15,6 +16,9 @@ public final class Injector {
     }
 
     private static RestEndpointInterface getApiService() {
-        return RestApiClient.getClient().create(RestEndpointInterface.class);
+        if(mApiService == null) {
+            mApiService = RestApiClient.getClient().create(RestEndpointInterface.class);
+        }
+        return mApiService;
     }
 }
