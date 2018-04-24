@@ -17,7 +17,7 @@ public interface MovieDetailContract {
         void showNoReviewsMessage();
         void showConnectionErrorMessage();
         boolean isNetworkConnected();
-
+        void setFavoriteButtonText( boolean addFavorite);
     }
 
     interface Presenter{
@@ -27,5 +27,6 @@ public interface MovieDetailContract {
         void loadTrailers(long id);
         void insertFavorite(Movie movie);
         void deleteFromFavorites(Movie movie);
+        void checkMovieStatusAndConfigureButton(Movie movie);
     }
 }

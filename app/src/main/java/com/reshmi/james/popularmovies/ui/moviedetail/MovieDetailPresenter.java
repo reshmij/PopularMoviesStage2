@@ -1,11 +1,11 @@
 package com.reshmi.james.popularmovies.ui.moviedetail;
 
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.reshmi.james.popularmovies.data.MoviesDataSource;
 import com.reshmi.james.popularmovies.data.MoviesRepository;
-import com.reshmi.james.popularmovies.data.database.MovieDbContract;
 import com.reshmi.james.popularmovies.data.network.model.Movie;
 import com.reshmi.james.popularmovies.data.network.model.Review;
 import com.reshmi.james.popularmovies.data.network.model.Trailer;
@@ -78,9 +78,20 @@ public class MovieDetailPresenter implements MovieDetailContract.Presenter{
 
     @Override
     public void deleteFromFavorites(Movie movie) {
-        String selection = MovieDbContract.MovieEntry.COLUMN_NAME_MOVIE_ID+"=?";
-        String[] selectionArgs = {String.valueOf(movie.getId())};
-        mMoviesRepository.deleteFavoriteMovie(selection,selectionArgs);
+        mMoviesRepository.deleteFavoriteMovie(movie.getId());
     }
 
+    @Override
+    public void checkMovieStatusAndConfigureButton(Movie movie) {
+        mMoviesRepository.getMovie(movie.getId(), new MoviesDataSource.MovieStatusCallback() {
+            @Override
+            public void onStatusUpdate(Cursor cursor) {
+                //If cursor returns at least one row, then movie is in the database, it was marked as favorite
+                boolean isMovieMarkedAsFavorite = cursor.getCount() > 0;
+                //Configure favorite button text accordingly
+                mMovieDetailView.setFavoriteButtonText(isMovieMarkedAsFavorite);
+                cursor.close();
+            }
+        });
+    }
 }

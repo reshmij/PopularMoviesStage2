@@ -2,12 +2,10 @@ package com.reshmi.james.popularmovies.data.database;
 
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.reshmi.james.popularmovies.data.database.MovieDbContract.MovieEntry;
-import com.reshmi.james.popularmovies.data.network.model.Movie;
 
 public class MovieDbHelper extends SQLiteOpenHelper {
 
@@ -40,18 +38,5 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES);
         onCreate(sqLiteDatabase);
-    }
-
-    public boolean isMovieMarkedAsFavorite(Movie movie){
-        SQLiteDatabase db = getReadableDatabase();
-        String[] projection = {
-                MovieEntry.COLUMN_NAME_MOVIE_ID
-        };
-        String selection = MovieEntry.COLUMN_NAME_MOVIE_ID + " = ?";
-        String[] selectionArgs = { String.valueOf(movie.getId()) };
-        Cursor cursor = db.query(MovieEntry.TABLE_NAME, projection,selection,selectionArgs,null,null,null);
-        int  count = cursor.getCount();
-        cursor.close();
-        return (count>0);
     }
 }

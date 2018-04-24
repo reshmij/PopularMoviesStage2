@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.reshmi.james.popularmovies.data.database.MovieDbContract;
 import com.reshmi.james.popularmovies.data.network.RestEndpointInterface;
 import com.reshmi.james.popularmovies.data.network.model.Movie;
 import com.reshmi.james.popularmovies.data.network.model.MoviesResponse;
@@ -86,13 +85,18 @@ public class MoviesRepository implements MoviesDataSource {
     }
 
     @Override
-    public void insertFavoriteMovie(@NonNull Movie movie) {
-        mContentResolver.insert(MovieDbContract.MovieEntry.CONTENT_URI, ProviderUtils.getContentValues(movie));
+    public void insertFavoriteMovie(@NonNull final Movie movie) {
+        new ProviderUtils.InsertMovieTask(mContentResolver).execute(movie);
     }
 
     @Override
-    public void deleteFavoriteMovie(@NonNull String selection, String[] selectionArgs) {
-        mContentResolver.delete(MovieDbContract.MovieEntry.CONTENT_URI,selection, selectionArgs);
+    public void deleteFavoriteMovie(long movieId) {
+        new ProviderUtils.DeleteMovieTask(mContentResolver).execute(movieId);
+    }
+
+    @Override
+    public void getMovie(long movieId, final MovieStatusCallback callback) {
+        new ProviderUtils.GetMovieTask(mContentResolver,callback).execute(movieId);
     }
 
     @Override
@@ -141,4 +145,6 @@ public class MoviesRepository implements MoviesDataSource {
             }
         });
     }
+
+
 }
