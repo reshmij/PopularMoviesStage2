@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,15 +26,16 @@ import com.reshmi.james.popularmovies.util.ConnectionUtils;
 
 import java.util.List;
 
-public class PopularMoviesFragment extends Fragment implements PopularMoviesContract.View, PopularMoviesGridAdapter.ListItemClickListener,SharedPreferences.OnSharedPreferenceChangeListener {
+public class PopularMoviesFragment extends Fragment implements PopularMoviesContract.View, PopularMoviesGridAdapter.ListItemClickListener{
 
     private static final String TAG = "PopularMoviesFragment";
-    private static final String SCROLL_POSITION = "scroll_position";
+    private static final String KEY_INSTANCE_STATE_RV_POSITION = "scroll_position";
     private RecyclerView mRecyclerView;
     private List<Movie> mMovies;
-    private int mCurrentChoice = 0;
     private ProgressBar mLoadingIndicator;
     private TextView mErrorMessageView;
+    private LinearLayoutManager mLayoutManager;
+    private Parcelable mLayoutManagerSavedState;
 
     private PopularMoviesContract.Presenter mPresenter;
 
@@ -41,18 +44,14 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_popular_movies, container, false);
         setupUI(root);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         return root;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        if(savedInstanceState!=null){
-            mCurrentChoice = savedInstanceState.getInt(SCROLL_POSITION);
-        }
+    public void onPause() {
+        super.onPause();
+        //Save the current state of the recycler view
+        mLayoutManagerSavedState = mLayoutManager.onSaveInstanceState();
     }
 
     @Override
@@ -65,19 +64,24 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(SCROLL_POSITION,mCurrentChoice);
+        //Save the current state of the recycler view
+        outState.putParcelable(KEY_INSTANCE_STATE_RV_POSITION,mLayoutManager.onSaveInstanceState());
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mRecyclerView.getContext());
-        sp.unregisterOnSharedPreferenceChangeListener(this);
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState!=null){
+            //Restore the last saved state of the recycler view.
+            mLayoutManagerSavedState = savedInstanceState.getParcelable(KEY_INSTANCE_STATE_RV_POSITION);
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mLayoutManagerSavedState);
+        }
     }
 
     private void setupUI(View root) {
         mRecyclerView = root.findViewById(R.id.pop_movies_grid);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(mRecyclerView.getContext(),2));
+        mLayoutManager = new GridLayoutManager(mRecyclerView.getContext(),2);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemViewCacheSize(20);
         mRecyclerView.setDrawingCacheEnabled(true);
         mRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
@@ -85,15 +89,6 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
 
         mErrorMessageView = root.findViewById(R.id.pop_movies_error_message);
         mLoadingIndicator = root.findViewById(R.id.pop_movies_loading_indicator);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(TAG, "Shared preference changed");
-        if(key.equals(getString(R.string.sort_order_pref_key))){
-            //Reset the current choice to 0 if preference has changed
-            mCurrentChoice = 0;
-        }
     }
 
     private void loadPreferredMovieList(SharedPreferences sp, String key){
@@ -128,7 +123,6 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
 
         try {
             Movie movie = mMovies.get(position);
-            mCurrentChoice = position;
 
             Context context = getContext();
             Intent intent = new Intent(context, MovieDetailActivity.class);
@@ -160,7 +154,11 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
         mMovies = movies;
         PopularMoviesGridAdapter adapter = (PopularMoviesGridAdapter) mRecyclerView.getAdapter();
         adapter.setData(mMovies);
-        mRecyclerView.smoothScrollToPosition(mCurrentChoice);
+
+        //Restore the saved state of the list, if any, after loading the data
+        if(mLayoutManagerSavedState!=null){
+            mLayoutManager.onRestoreInstanceState(mLayoutManagerSavedState);
+        }
     }
 
     @Override
