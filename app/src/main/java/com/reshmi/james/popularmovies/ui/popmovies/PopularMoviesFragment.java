@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.reshmi.james.popularmovies.R;
 import com.reshmi.james.popularmovies.data.network.model.Movie;
 import com.reshmi.james.popularmovies.ui.moviedetail.MovieDetailActivity;
 import com.reshmi.james.popularmovies.util.ConnectionUtils;
+import com.reshmi.james.popularmovies.util.DisplayUtils;
 
 import java.util.List;
 
@@ -80,7 +82,7 @@ public class PopularMoviesFragment extends Fragment implements PopularMoviesCont
 
     private void setupUI(View root) {
         mRecyclerView = root.findViewById(R.id.pop_movies_grid);
-        mLayoutManager = new GridLayoutManager(mRecyclerView.getContext(),2);
+        mLayoutManager = new GridLayoutManager(mRecyclerView.getContext(), DisplayUtils.calculateNoOfColumns(getContext()));
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemViewCacheSize(20);
         mRecyclerView.setDrawingCacheEnabled(true);
